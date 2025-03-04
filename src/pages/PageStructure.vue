@@ -72,15 +72,15 @@ onMounted(async () => {
   infoData.value = [
     {
       item: '长',
-      value: size[0],
+      value: size[2],
     },
     {
       item: '宽',
-      value: size[1],
+      value: size[0],
     },
     {
       item: '高',
-      value: size[2],
+      value: size[1],
     },
     {
       item: '体积',

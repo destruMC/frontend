@@ -6,7 +6,7 @@ import {
   NbtIntArray,
   NbtType,
   Structure,
-  type StructureProvider
+  type StructureProvider, Identifier
 } from "deepslate";
 import {fromAlphaMaterial} from "@/utils/deepslate/alpha-materials.util.ts";
 
@@ -66,6 +66,68 @@ export class MultiStructure implements StructureProvider {
 
 function getTriple(tag: NbtCompound): BlockPos {
   return [tag.getNumber('x'), tag.getNumber('y'), tag.getNumber('z')]
+}
+
+export function destruToStructure(root: NbtCompound) {
+  const regions: StructureRegion[] = []
+
+  const min = [Infinity, Infinity, Infinity];
+  const max = [-Infinity, -Infinity, -Infinity];
+
+  const paletteNbt = root.getList('palette', 10);
+
+  root.getList('regions', 10).forEach((region) => {
+    const pos = region.getIntArray('pos');
+    const size = region.getIntArray('size');
+
+    const [x, y, z] = [pos.get(0), pos.get(1), pos.get(2)].map(n => n ? n.getAsNumber() : 0);
+    const [width, height, length] = [size.get(0), size.get(1), size.get(2)].map(n => n ? n.getAsNumber() : 0);
+
+    const bound = [x + width, y + height, z + length];
+    for (let i = 0; i < 3; i++) {
+      min[i] = Math.min(min[i], x, bound[i]);
+      max[i] = Math.max(max[i], x, bound[i]);
+    }
+
+    const palette: BlockState[] = []
+    const paletteMap = new Map<string, number>();
+    const addPalette = (state: BlockState): number => {
+      const key = state.toString()
+      const existing = paletteMap.get(key);
+      if (existing !== undefined) return existing;
+      const index = palette.length;
+      palette.push(state);
+      paletteMap.set(key, index);
+      return index;
+    };
+
+    const blocks: { pos: BlockPos; state: number; nbt?: NbtCompound; }[] = []
+    const yLayerSize = width * length;
+    const getPos = (index: number): [number, number, number] => {
+      const y = Math.floor(index / yLayerSize);
+      const layerIndex = index % yLayerSize;
+      const z = Math.floor(layerIndex / width);
+      const x = layerIndex % width;
+      return [ x, y, z ]
+    }
+
+    region.getLongArray('blocks').forEach((state, index) => {
+      const blockNbt = paletteNbt.get(state.getAsNumber())
+      if (blockNbt == undefined) return
+      blocks.push({
+        pos: getPos(index),
+        state: addPalette(new BlockState(Identifier.parse(blockNbt.getString('id')), blockNbt.getCompound('properties').map((key, value) => [key, value.getAsString()]))),
+        nbt: blockNbt.hasCompound('data') ? blockNbt.getCompound('data') : undefined,
+      });
+    })
+
+    regions.push({
+      pos: [x, y, z],
+      structure: new Structure([width, height, length], palette, blocks),
+    })
+  })
+
+  return new MultiStructure(min.map((min, i) => max[i] - min) as [number, number, number], regions)
 }
 
 export function spongeToStructure(root: NbtCompound) {
@@ -252,6 +314,9 @@ export function schematicToStructure(root: NbtCompound) {
 }
 
 export function loadStructure(root: NbtCompound) {
+  if (root.hasList('palette', 10) && root.hasList('regions', 10)) {
+    return destruToStructure(root)
+  }
   if (root.get('BlockData')?.isByteArray() && root.hasCompound('Palette')) {
     return spongeToStructure(root)
   }
