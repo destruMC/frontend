@@ -112,18 +112,17 @@ export class ResourceManager implements Resources, ItemRendererResources {
 
   public loadBlockAtlas(atlas: HTMLImageElement, textures: any) {
     const atlasCanvas = document.createElement('canvas')
-    const w = upperPowerOfTwo(atlas.width)
-    const h = upperPowerOfTwo(atlas.height)
-    atlasCanvas.width = w
-    atlasCanvas.height = h
+    const atlasSize = upperPowerOfTwo(Math.max(atlas.width, atlas.height))
+    atlasCanvas.width = atlasSize
+    atlasCanvas.height = atlasSize
     const atlasCtx = atlasCanvas.getContext('2d')!
     atlasCtx.drawImage(atlas, 0, 0)
-    const atlasData = atlasCtx.getImageData(0, 0, w, h)
+    const atlasData = atlasCtx.getImageData(0, 0, atlasSize, atlasSize)
     const idMap: Record<string, UV> = {}
-    Object.keys(textures).forEach((id) => {
+    Object.keys(textures).forEach(id => {
       const [u, v, du, dv] = textures[id]
-      const dv2 = du !== dv && id.startsWith('block/') ? du : dv
-      idMap[Identifier.create(id).toString()] = [u / w, v / h, (u + du) / w, (v + dv2) / h]
+      const dv2 = (du !== dv && id.startsWith('block/')) ? du : dv
+      idMap[Identifier.create(id).toString()] = [u / atlasSize, v / atlasSize, (u + du) / atlasSize, (v + dv2) / atlasSize]
     })
     this.textureAtlas = new TextureAtlas(atlasData, idMap)
   }

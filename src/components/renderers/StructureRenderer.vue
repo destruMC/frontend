@@ -125,8 +125,6 @@ const redraw = () => {
     renderer = null
   }
 
-  console.log(props.structure);
-
   const size = props.structure.getSize()
   renderer = new StructureRenderer(gl, props.structure, resources.value)
 

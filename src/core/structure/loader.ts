@@ -12,6 +12,7 @@ export const loadResources = async (): Promise<ResourceManager> => {
     new Promise<HTMLImageElement>((res) => {
       const image = new Image()
       image.onload = () => res(image)
+      image.crossOrigin = 'Anonymous'
       image.src = `${MCMETA}atlas/all/atlas.png`
     }),
   ])
