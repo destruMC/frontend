@@ -3,7 +3,8 @@ import { ResourceManager } from '@/core/structure/resource-manager.ts'
 const MCMETA = 'https://raw.gitmirror.com/misode/mcmeta/'
 
 export const loadResources = async (): Promise<ResourceManager> => {
-  const [blocks, block_models, item_models, item_components, textures, atlas] = await Promise.all([
+  const [blocks, blockDefinitions, blockModels, itemModels, itemComponents, textures, atlas] = await Promise.all([
+    fetch(`${MCMETA}summary/blocks/data.min.json`).then(r => r.json()),
     fetch(`${MCMETA}summary/assets/block_definition/data.min.json`).then(r => r.json()),
     fetch(`${MCMETA}summary/assets/model/data.min.json`).then(r => r.json()),
     fetch(`${MCMETA}summary/assets/item_definition/data.min.json`).then(r => r.json()),
@@ -17,5 +18,5 @@ export const loadResources = async (): Promise<ResourceManager> => {
     }),
   ])
 
-  return new ResourceManager(blocks, block_models, item_models, item_components, textures, atlas)
+  return new ResourceManager(blocks, blockDefinitions, blockModels, itemModels, itemComponents, textures, atlas)
 }

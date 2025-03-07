@@ -4,7 +4,7 @@ import {
   Identifier,
   ItemModel,
   type ItemRendererResources,
-  jsonToNbt,
+  jsonToNbt, NbtTag,
   type Resources,
   TextureAtlas,
   upperPowerOfTwo,
@@ -15,13 +15,9 @@ import {
   OPAQUE_BLOCKS,
   TRANSLUCENT_BLOCKS,
 } from '@/utils/deepslate/block-flags.util.ts'
-import type {NbtTag} from "deepslate/lib/nbt";
 
 export class ResourceManager implements Resources, ItemRendererResources {
-  private readonly blocks: Map<
-    string,
-    { default: Record<string, string>; properties: Record<string, string[]> }
-  >
+  private readonly blocks: Map<string, { properties: Record<string, string[]> | null; default: Record<string, string> | null; }>
   private readonly blockDefinitions: { [id: string]: BlockDefinition }
   private readonly blockModels: { [id: string]: BlockModel }
   private readonly itemModels: { [id: string]: ItemModel }
@@ -29,25 +25,22 @@ export class ResourceManager implements Resources, ItemRendererResources {
   private textureAtlas: TextureAtlas
 
   constructor(
-    blocks: Map<string, unknown>,
+    blocks: Map<string, Map<number, unknown>>,
+    blockDefinitions: Map<string, Map<string, unknown>>,
     blockModels: Map<string, unknown>,
-    itemModels: Map<string, unknown>,
-    itemComponents: Map<string, unknown>,
-    textures: any,
+    itemModels: Map<string, Map<string, { model: unknown }>>,
+    itemComponents: Map<string, Map<string, unknown>>,
+    textures: Map<string, [number, number, number, number]>,
     atlas: HTMLImageElement,
   ) {
-    this.blocks = new Map(
-      Object.entries(blocks).map(([k, v]: [string, any]) => [
-        Identifier.create(k).toString(),
-        { properties: v[0], default: v[1] },
-      ]),
-    )
+    this.blocks = new Map()
     this.blockDefinitions = {}
     this.blockModels = {}
     this.itemModels = {}
     this.itemComponents = {}
     this.textureAtlas = TextureAtlas.empty()
-    this.loadBlockDefinitions(blocks)
+    this.loadBlocks(blocks)
+    this.loadBlockDefinitions(blockDefinitions)
     this.loadBlockModels(blockModels)
     this.loadBlockAtlas(atlas, textures)
     this.loadItemModels(itemModels)
@@ -95,22 +88,29 @@ export class ResourceManager implements Resources, ItemRendererResources {
     return this.itemComponents[id.toString()]
   }
 
+  public loadBlocks(blocks: Map<string, Map<number, unknown>>) {
+    Object.entries(blocks).forEach(([id, value]) => {
+      this.blocks.set(Identifier.create(id).toString(), { properties: value[0], default: value[1] })
+    })
+  }
+
   public loadBlockDefinitions(definitions: Map<string, unknown>) {
-    Object.keys(definitions).forEach((id) => {
-      this.blockDefinitions[Identifier.create(id).toString()] = BlockDefinition.fromJson(
-        definitions[id],
-      )
+    Object.entries(definitions).forEach(([id, definition]) => {
+      this.blockDefinitions[Identifier.create(id).toString()] = BlockDefinition.fromJson(definition)
     })
   }
 
   public loadBlockModels(models: Map<string, unknown>) {
-    Object.keys(models).forEach((id) => {
-      this.blockModels[Identifier.create(id).toString()] = BlockModel.fromJson(models[id])
+    Object.entries(models).forEach(([id, model]) => {
+      this.blockModels[Identifier.create(id).toString()] = BlockModel.fromJson(model)
     })
     Object.values(this.blockModels).forEach((m) => m.flatten(this))
   }
 
-  public loadBlockAtlas(atlas: HTMLImageElement, textures: any) {
+  public loadBlockAtlas(
+    atlas: HTMLImageElement,
+    textures: Map<string, [number, number, number, number]>,
+  ) {
     const atlasCanvas = document.createElement('canvas')
     const atlasSize = upperPowerOfTwo(Math.max(atlas.width, atlas.height))
     atlasCanvas.width = atlasSize
@@ -119,25 +119,29 @@ export class ResourceManager implements Resources, ItemRendererResources {
     atlasCtx.drawImage(atlas, 0, 0)
     const atlasData = atlasCtx.getImageData(0, 0, atlasSize, atlasSize)
     const idMap: Record<string, UV> = {}
-    Object.keys(textures).forEach(id => {
-      const [u, v, du, dv] = textures[id]
-      const dv2 = (du !== dv && id.startsWith('block/')) ? du : dv
-      idMap[Identifier.create(id).toString()] = [u / atlasSize, v / atlasSize, (u + du) / atlasSize, (v + dv2) / atlasSize]
+    Object.entries(textures).forEach(([id, [u, v, du, dv]]) => {
+      const dv2 = du !== dv && id.startsWith('block/') ? du : dv
+      idMap[Identifier.create(id).toString()] = [
+        u / atlasSize,
+        v / atlasSize,
+        (u + du) / atlasSize,
+        (v + dv2) / atlasSize,
+      ]
     })
     this.textureAtlas = new TextureAtlas(atlasData, idMap)
   }
 
-  public loadItemModels(models: Map<string, unknown>) {
-    Object.keys(models).forEach((id) => {
-      this.itemModels[Identifier.create(id).toString()] = ItemModel.fromJson(models[id].model)
+  public loadItemModels(models: Map<string, Map<string, { model: unknown }>>) {
+    Object.entries(models).forEach(([id, model]) => {
+      this.itemModels[Identifier.create(id).toString()] = ItemModel.fromJson(model.model)
     })
   }
 
-  public loadItemComponents(itemComponents: Map<string, unknown>) {
-    Object.keys(itemComponents).forEach(id => {
+  public loadItemComponents(itemComponents: Map<string, Map<string, unknown>>) {
+    Object.entries(itemComponents).forEach(([id, component]) => {
       const components = new Map<string, NbtTag>()
-      Object.keys(itemComponents[id]).forEach(c_id => {
-        components.set(c_id, jsonToNbt(itemComponents[id][c_id]))
+      Object.entries(component).forEach(([key, value]) => {
+        components.set(key, jsonToNbt(value))
       })
       this.itemComponents[Identifier.create(id).toString()] = components
     })
