@@ -1,8 +1,10 @@
 import {ofetch} from "ofetch";
 import type {StructuresResponse, StructureResponse} from "@/types/response";
 
+const url = import.meta.env.VITE_API_URL
+
 const api = ofetch.create({
-  baseURL: "http://127.0.0.1:8080",
+  baseURL: url,
 })
 
 export default {
