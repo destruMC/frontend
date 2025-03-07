@@ -126,7 +126,7 @@ const redraw = () => {
   }
 
   const size = props.structure.getSize()
-  renderer = new StructureRenderer(gl, props.structure, resources.value)
+  renderer = new StructureRenderer(gl, props.structure, resources.value, { useInvisibleBlockBuffer: false })
 
   interactiveCanvas = new InteractiveCanvas(
     canvas.value,

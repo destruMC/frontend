@@ -1,6 +1,6 @@
 import { ResourceManager } from '@/core/structure/resource-manager.ts'
 
-const MCMETA = 'https://raw.githubusercontent.com/misode/mcmeta/'
+const MCMETA = 'https://raw.gitmirror.com/misode/mcmeta/'
 
 export const loadResources = async (): Promise<ResourceManager> => {
   const [blocks, block_models, item_models, item_components, textures, atlas] = await Promise.all([

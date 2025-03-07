@@ -10,10 +10,11 @@ import { computed, h, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '@/core/api.ts'
 import { md } from '@/utils/markdown.util.ts'
-import { loadStructure } from '@/utils/deepslate/structures.util.ts'
-import { BlockState, ItemStack, NbtFile } from 'deepslate'
+import {loadStructure, structure2destru, structure2Nbt} from '@/utils/deepslate/structures.util.ts'
+import {BlockState, ItemStack, NbtFile, type StructureProvider} from 'deepslate'
 import ItemRenderer from '@/components/renderers/ItemRenderer.vue'
-import {NFlex, NSelect, useDialog} from 'naive-ui'
+import { NButton, NFlex, NSelect, NIcon, useDialog } from 'naive-ui'
+import Pako from "pako";
 
 const isMobile = useIsMobile()
 const s = computed(() => (isMobile.value ? '1rem' : '1.5rem'))
@@ -35,6 +36,14 @@ const structureOptions = ref({
 
 const route = useRoute()
 
+const blobs = {
+  nbt: ref(),
+  destru: ref(),
+  sponge: ref(),
+  litematic: ref(),
+  schematic: ref(),
+}
+
 onMounted(async () => {
   const response = (await api.getStructure(route.params.id.toString())).structure
   structureName.value = response.name
@@ -43,8 +52,9 @@ onMounted(async () => {
   structureImages.value = response.images
   structureCreators.value = response.creators
 
-  const lastFile = await fetch(response.files[response.files.length - 1].url)
-  const arrayBuffer = await lastFile.arrayBuffer()
+  const file = await fetch(response.files[response.files.length - 1].url)
+  const blob = await file.blob()
+  const arrayBuffer = await blob.arrayBuffer()
   const structure = loadStructure(NbtFile.read(new Uint8Array(arrayBuffer)).root)
 
   structureRef.value = structure
@@ -125,6 +135,39 @@ const infoData = ref()
 const dialog = useDialog()
 
 function handleDownload() {
+  const type = ref<"nbt" | "destru" | "sponge" | "litematic" | "schematic">()
+
+  function download(blob: Blob, type: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${structureName.value}.${type}`
+    a.click()
+  }
+
+  async function handleDownload() {
+    const blob = (handler: (structure: StructureProvider) => NbtFile) => new Blob([Pako.gzip(handler(structureRef.value).write())])
+    switch (type.value) {
+      case 'nbt': {
+        if (!blobs.nbt.value) {
+          blobs.nbt.value = blob(structure2Nbt)
+        }
+        download(blobs.nbt.value, 'nbt')
+        break
+      }
+      case 'destru': {
+        if (!blobs.destru.value) {
+          blobs.destru.value = blob(structure2destru)
+        }
+        download(blobs.destru.value, 'destru')
+        break
+      }
+      default: {
+        console.log(type.value)
+      }
+    }
+  }
+
   dialog.create({
     title: `下载 ${structureName.value}`,
     showIcon: false,
@@ -134,44 +177,57 @@ function handleDownload() {
       {
         vertical: true,
       },
-      [
-        h(
-          NSelect,
-          {
-            placeholder: "游戏版本",
-            options: [
-              {
-                label: '1.21.4',
-                value: '1.21.4'
-              }
-            ]
-          }
-        ),
-        h(
-          NSelect,
-          {
-            placeholder: "文件类型",
-            options: [
-              {
-                label: 'NBT (*.nbt)',
-                value: 'nbt'
-              },
-              {
-                label: 'Sponge (*.schem)',
-                value: 'sponge'
-              },
-              {
-                label: 'Litematic (*.litematic)',
-                value: 'litematic'
-              },
-              {
-                label: 'Schematic (*.schematic)',
-                value: 'schematic'
-              },
-            ]
-          }
-        )
-      ]
+      {
+        default: () => [
+          h(
+            NSelect,
+            {
+              placeholder: "文件类型",
+              value: type.value,
+              "onUpdate:value": (value) => { type.value = value },
+              renderTag: (props) => (
+                `文件类型：${props.option.label}`
+              ),
+              options: [
+                {
+                  label: 'NBT (*.nbt)',
+                  value: 'nbt'
+                },
+                {
+                  label: 'destru (*.destru)',
+                  value: 'destru'
+                },
+                {
+                  label: 'Sponge (*.schem)',
+                  value: 'sponge',
+                  disabled: true
+                },
+                {
+                  label: 'Litematic (*.litematic)',
+                  value: 'litematic',
+                  disabled: true
+                },
+                {
+                  label: 'Schematic (*.schematic)',
+                  value: 'schematic',
+                  disabled: true
+                },
+              ]
+            }
+          ),
+          h(
+            NButton,
+            {
+              type: 'primary',
+              disabled: !type.value,
+              onClick: () => handleDownload()
+            },
+            {
+              default: () => '下载',
+            }
+          )
+        ]
+      }
     ),
   })
 }
@@ -229,7 +285,7 @@ function handleDownload() {
                 :tabs-padding="p"
               >
                 <n-tab-pane name="model" tab="模型">
-                  <n-flex vertical justify="center" align="center" style="aspect-ratio: 16/9">
+                  <n-flex vertical justify="center" align="center" style="aspect-ratio: 16/9;">
                     <structure-renderer :structure="structureRef" :options="structureOptions" />
                   </n-flex>
                 </n-tab-pane>
@@ -248,7 +304,7 @@ function handleDownload() {
                 <template v-if="tab == `model`" #suffix>
                   <n-flex :style="`padding: 0 ${s}; gap: ${b};`">
                     <n-checkbox v-model:checked="structureOptions.grid"> 边框 </n-checkbox>
-                    <n-checkbox v-model:checked="structureOptions.invisibleBlocks">
+                    <n-checkbox v-model:checked="structureOptions.invisibleBlocks" disabled>
                       隐形方块
                     </n-checkbox>
                   </n-flex>

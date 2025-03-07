@@ -2,12 +2,24 @@
 import {useIsMobile} from "@/utils/composables.util.ts";
 import IconEye from "@/components/icons/xicons/tabler/IconEye.vue";
 import IconEyeOff from "@/components/icons/xicons/tabler/IconEyeOff.vue";
-import {computed} from "vue";
+import {computed, ref} from "vue";
 
 const isMobile = useIsMobile();
 
 const h = computed(() => isMobile.value ? '1rem' : '1.5rem');
 const v = computed(() => isMobile.value ? '0.5rem' : '1rem');
+
+function id(value: string) {
+  return /^[0-9a-zA-Z_-]*$/.test(value)
+}
+
+const upIv = ref()
+const upPv = ref()
+const upRv = ref()
+
+function handleUp() {
+
+}
 </script>
 
 <template>
@@ -18,10 +30,10 @@ const v = computed(() => isMobile.value ? '0.5rem' : '1rem');
           <n-flex vertical align="center" style="gap: 0;">
             <n-form :show-label="false" :show-feedback="false">
               <n-form-item-row :style="`margin-bottom: ${v}`">
-                <n-input placeholder="账号或邮箱" />
+                <n-input placeholder="账号" />
               </n-form-item-row>
               <n-form-item-row :style="`margin-bottom: ${v}`">
-                <n-input type="password" show-password-toggle placeholder="密码">
+                <n-input type="password" show-password-on="mousedown" placeholder="密码">
                   <template #password-visible-icon>
                     <n-icon :component="IconEye" />
                   </template>
@@ -40,10 +52,10 @@ const v = computed(() => isMobile.value ? '0.5rem' : '1rem');
           <n-flex vertical align="center" style="gap: 0;">
             <n-form :show-label="false" :show-feedback="false">
               <n-form-item-row :style="`margin-bottom: ${v};`">
-                <n-input placeholder="账号" />
+                <n-input placeholder="账号" maxlength="20" show-count :allow-input="id" v-model:value="upIv"/>
               </n-form-item-row>
               <n-form-item-row :style="`margin-bottom: ${v};`">
-                <n-input type="password" show-password-toggle placeholder="密码">
+                <n-input type="password" show-password-on="mousedown" placeholder="密码" v-model:value="upPv">
                   <template #password-visible-icon>
                     <n-icon :component="IconEye" />
                   </template>
@@ -53,7 +65,7 @@ const v = computed(() => isMobile.value ? '0.5rem' : '1rem');
                 </n-input>
               </n-form-item-row>
               <n-form-item-row :style="`margin-bottom: ${v};`">
-                <n-input type="password" show-password-toggle placeholder="重复密码">
+                <n-input type="password" show-password-on="mousedown" placeholder="重复密码" v-model:value="upRv">
                   <template #password-visible-icon>
                     <n-icon :component="IconEye" />
                   </template>
@@ -62,14 +74,14 @@ const v = computed(() => isMobile.value ? '0.5rem' : '1rem');
                   </template>
                 </n-input>
               </n-form-item-row>
-              <n-form-item-row :style="`margin-bottom: ${v};`">
-                <n-flex :style="`min-width: 100%; gap: ${v}`">
-                  <n-input placeholder="邮箱" :style="isMobile ? `` : `flex: 2`" />
-                  <n-input placeholder="验证码" :style="isMobile ? `` : `flex: 1`" />
-                </n-flex>
-              </n-form-item-row>
+<!--              <n-form-item-row :style="`margin-bottom: ${v};`">-->
+<!--                <n-flex :style="`min-width: 100%; gap: ${v}`">-->
+<!--                  <n-input placeholder="邮箱" :style="isMobile ? `` : `flex: 2`" />-->
+<!--                  <n-input placeholder="验证码" :style="isMobile ? `` : `flex: 1`" />-->
+<!--                </n-flex>-->
+<!--              </n-form-item-row>-->
             </n-form>
-            <n-button type="primary">
+            <n-button type="primary" :onclick="handleUp">
               注册
             </n-button>
           </n-flex>
