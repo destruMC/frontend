@@ -6,6 +6,11 @@ interface Response {
 
 export interface StructuresResponse extends Response {
   structures: StructurePreview[];
+  pagination: {
+    page: number;
+    size: number;
+    total: number;
+  }
 }
 
 export interface StructureResponse extends Response {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NConfigProvider, useOsTheme, darkTheme, lightTheme } from 'naive-ui'
+import { NConfigProvider, useOsTheme, darkTheme, lightTheme, zhCN, dateZhCN } from 'naive-ui'
 import { darkThemeOverrides, lightThemeOverrides } from "@/assets/theme.ts";
 import DESTRU from "@/DESTRU.vue";
 import {computed} from "vue";
@@ -11,7 +11,7 @@ const themeOverrides = computed(() => (osTheme.value === 'dark' ? darkThemeOverr
 </script>
 
 <template>
-  <n-config-provider :theme="theme" :themeOverrides="themeOverrides" preflight-style-disabled>
+  <n-config-provider :theme="theme" :themeOverrides="themeOverrides" preflight-style-disabled :locale="zhCN" :date-locale="dateZhCN">
     <n-loading-bar-provider>
       <n-dialog-provider>
         <d-e-s-t-r-u />
