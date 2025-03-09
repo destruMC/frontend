@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import IconLogo from "@/components/icons/IconLogo.vue";
-import IconTitle from "@/components/icons/IconTitle.vue";
-import IconLogin from "@/components/icons/xicons/tabler/IconLogin.vue";
+import IconLogo from '@/components/icons/IconLogo.vue'
+import IconTitle from '@/components/icons/IconTitle.vue'
+import IconLogin from '@/components/icons/xicons/tabler/IconLogin.vue'
 </script>
 
 <template>

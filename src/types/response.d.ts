@@ -1,18 +1,18 @@
-import type {StructurePreview} from "@/types/structure";
+import type { StructurePreview } from '@/types/structure'
 
 interface Response {
-  success: boolean;
+  success: boolean
 }
 
 export interface StructuresResponse extends Response {
-  structures: StructurePreview[];
+  structures: StructurePreview[]
   pagination: {
-    page: number;
-    size: number;
-    total: number;
+    page: number
+    size: number
+    total: number
   }
 }
 
 export interface StructureResponse extends Response {
-  structure: Structure;
+  structure: Structure
 }

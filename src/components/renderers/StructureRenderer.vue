@@ -93,7 +93,7 @@ class InteractiveCanvas {
   private renderImmediately() {
     this.yRot = this.yRot % (Math.PI * 2)
     this.xRot = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.xRot))
-    this.viewDist = Math.min(Math.max(this.viewDist, 1), this.maxViewDist);
+    this.viewDist = Math.min(Math.max(this.viewDist, 1), this.maxViewDist)
 
     const view = mat4.create()
     mat4.translate(view, view, [0, 0, -this.viewDist])
@@ -126,7 +126,9 @@ const redraw = () => {
   }
 
   const size = props.structure.getSize()
-  renderer = new StructureRenderer(gl, props.structure, resources.value, { useInvisibleBlockBuffer: false })
+  renderer = new StructureRenderer(gl, props.structure, resources.value, {
+    useInvisibleBlockBuffer: false,
+  })
 
   interactiveCanvas = new InteractiveCanvas(
     canvas.value,

@@ -1,19 +1,24 @@
 import {
-  type PlacedBlock,
   BlockPos,
   BlockState,
+  Identifier,
   NbtCompound,
+  NbtFile,
+  NbtInt,
   NbtIntArray,
+  NbtList,
+  NbtString,
   NbtType,
+  type PlacedBlock,
   Structure,
-  type StructureProvider, Identifier, NbtFile, NbtList, NbtString, NbtInt
-} from "deepslate";
-import {fromAlphaMaterial} from "@/utils/deepslate/alpha-materials.util.ts";
+  type StructureProvider,
+} from 'deepslate'
+import { fromAlphaMaterial } from '@/utils/deepslate/alpha-materials.util.ts'
 
 type StructureRegion = {
-  pos: BlockPos,
-  structure: StructureProvider,
-  name?: string,
+  pos: BlockPos
+  structure: StructureProvider
+  name?: string
 }
 
 export class MultiStructure implements StructureProvider {
@@ -39,12 +44,12 @@ export class MultiStructure implements StructureProvider {
   }
 
   getBlocks(): PlacedBlock[] {
-    return this.regions.flatMap(r => {
+    return this.regions.flatMap((r) => {
       try {
-        return r.structure.getBlocks().map(b => ({
+        return r.structure.getBlocks().map((b) => ({
           pos: BlockPos.add(r.pos, b.pos),
           state: b.state,
-          ...b.nbt ? { nbt: b.nbt } : {},
+          ...(b.nbt ? { nbt: b.nbt } : {}),
         }))
       } catch (e) {
         if (e instanceof Error) {
@@ -58,9 +63,14 @@ export class MultiStructure implements StructureProvider {
 
   private static posInRegion(pos: BlockPos, region: StructureRegion) {
     const size = region.structure.getSize()
-    return pos[0] >= region.pos[0] && pos[0] < region.pos[0] + size[0]
-      && pos[1] >= region.pos[1] && pos[1] < region.pos[1] + size[1]
-      && pos[2] >= region.pos[2] && pos[2] < region.pos[2] + size[2]
+    return (
+      pos[0] >= region.pos[0] &&
+      pos[0] < region.pos[0] + size[0] &&
+      pos[1] >= region.pos[1] &&
+      pos[1] < region.pos[1] + size[1] &&
+      pos[2] >= region.pos[2] &&
+      pos[2] < region.pos[2] + size[2]
+    )
   }
 }
 
@@ -69,26 +79,26 @@ function getTriple(tag: NbtCompound): BlockPos {
 }
 
 function createFlat123(width: number, length: number) {
-  const yLayerSize = width * length;
+  const yLayerSize = width * length
   return (index: number): [number, number, number] => {
-    const y = Math.floor(index / yLayerSize);
-    const layerIndex = index % yLayerSize;
-    const z = Math.floor(layerIndex / width);
-    const x = layerIndex % width;
-    return [ x, y, z ]
+    const y = Math.floor(index / yLayerSize)
+    const layerIndex = index % yLayerSize
+    const z = Math.floor(layerIndex / width)
+    const x = layerIndex % width
+    return [x, y, z]
   }
 }
 
 function createPaletteManager<S>(length: () => number, consume: (source: S) => void) {
-  const palette = new Map<string, number>();
+  const palette = new Map<string, number>()
   return (source: S, gen: (source: S) => string) => {
     const key = gen(source)
-    const existing = palette.get(key);
-    if (existing !== undefined) return existing;
-    const index = length();
+    const existing = palette.get(key)
+    if (existing !== undefined) return existing
+    const index = length()
     consume(source)
-    palette.set(key, index);
-    return index;
+    palette.set(key, index)
+    return index
   }
 }
 
@@ -111,38 +121,49 @@ export function loadStructure(root: NbtCompound) {
 export function destru2Structure(root: NbtCompound) {
   const regions: StructureRegion[] = []
 
-  const min = [Infinity, Infinity, Infinity];
-  const max = [-Infinity, -Infinity, -Infinity];
+  const min = [Infinity, Infinity, Infinity]
+  const max = [-Infinity, -Infinity, -Infinity]
 
-  const paletteNbt = root.getList('palette', 10);
+  const paletteNbt = root.getList('palette', 10)
 
   root.getList('regions', 10).forEach((region) => {
-    const pos = region.getIntArray('pos');
-    const size = region.getIntArray('size');
+    const pos = region.getIntArray('pos')
+    const size = region.getIntArray('size')
 
-    const [x, y, z] = [pos.get(0), pos.get(1), pos.get(2)].map(n => n ? n.getAsNumber() : 0);
-    const [width, height, length] = [size.get(0), size.get(1), size.get(2)].map(n => n ? n.getAsNumber() : 0);
+    const [x, y, z] = [pos.get(0), pos.get(1), pos.get(2)].map((n) => (n ? n.getAsNumber() : 0))
+    const [width, height, length] = [size.get(0), size.get(1), size.get(2)].map((n) =>
+      n ? n.getAsNumber() : 0,
+    )
 
-    const bound = [x + width, y + height, z + length];
+    const bound = [x + width, y + height, z + length]
     for (let i = 0; i < 3; i++) {
-      min[i] = Math.min(min[i], x, bound[i]);
-      max[i] = Math.max(max[i], x, bound[i]);
+      min[i] = Math.min(min[i], x, bound[i])
+      max[i] = Math.max(max[i], x, bound[i])
     }
 
     const palette: BlockState[] = []
-    const paletteAdd = createPaletteManager<BlockState>(() => palette.length, block => palette.push(block))
+    const paletteAdd = createPaletteManager<BlockState>(
+      () => palette.length,
+      (block) => palette.push(block),
+    )
 
-    const blocks: { pos: BlockPos; state: number; nbt?: NbtCompound; }[] = []
-    const flat123 = createFlat123(width, length);
+    const blocks: { pos: BlockPos; state: number; nbt?: NbtCompound }[] = []
+    const flat123 = createFlat123(width, length)
 
     region.getIntArray('blocks').forEach((state, index) => {
       const blockNbt = paletteNbt.get(state.getAsNumber())
       if (blockNbt == undefined) return
       blocks.push({
         pos: flat123(index),
-        state: paletteAdd(new BlockState(Identifier.parse(blockNbt.getString('id')), blockNbt.getCompound('properties').map((key, value) => [key, value.getAsString()])), block => block.toString()),
+        state: paletteAdd(
+          new BlockState(
+            Identifier.parse(blockNbt.getString('id')),
+            blockNbt.getCompound('properties').map((key, value) => [key, value.getAsString()]),
+          ),
+          (block) => block.toString(),
+        ),
         nbt: blockNbt.hasCompound('data') ? blockNbt.getCompound('data') : undefined,
-      });
+      })
     })
 
     regions.push({
@@ -167,7 +188,7 @@ export function sponge2Structure(root: NbtCompound) {
     palette[id] = BlockState.parse(key)
   }
 
-  const blockData = root.getByteArray('BlockData').map(e => e.getAsNumber())
+  const blockData = root.getByteArray('BlockData').map((e) => e.getAsNumber())
   const blockEntities = new Map<string, NbtCompound>()
   root.getList('BlockEntities', NbtType.Compound).forEach((tag) => {
     const pos = tag.getIntArray('Pos').toString()
@@ -175,7 +196,7 @@ export function sponge2Structure(root: NbtCompound) {
     copy.delete('Pos')
     blockEntities.set(pos, copy)
   })
-  const blocks: { pos: BlockPos, state: number, nbt?: NbtCompound }[] = []
+  const blocks: { pos: BlockPos; state: number; nbt?: NbtCompound }[] = []
   let i = 0
   for (let y = 0; y < height; y += 1) {
     for (let z = 0; z < length; z += 1) {
@@ -220,7 +241,7 @@ export function litematic2Structure(root: NbtCompound) {
     const palette = region.getList('BlockStatePalette', NbtType.Compound).map(BlockState.fromNbt)
     const blockStates = region.getLongArray('BlockStates')
     const tempDataview = new DataView(new Uint8Array(8).buffer)
-    const statesData = blockStates.map(long => {
+    const statesData = blockStates.map((long) => {
       tempDataview.setInt32(0, Number(long.getAsPair()[0]))
       tempDataview.setInt32(4, Number(long.getAsPair()[1]))
       return tempDataview.getBigUint64(0)
@@ -263,7 +284,7 @@ export function litematic2Structure(root: NbtCompound) {
       data >>= bigBits
       dataLength -= bigBits
     }
-    const blocks: { pos: BlockPos, state: number, nbt?: NbtCompound }[] = []
+    const blocks: { pos: BlockPos; state: number; nbt?: NbtCompound }[] = []
     const blockEntities = new Map<string, NbtCompound>()
     region.getList('TileEntities', NbtType.Compound).forEach((tag) => {
       const pos = getTriple(tag).toString()
@@ -276,7 +297,7 @@ export function litematic2Structure(root: NbtCompound) {
     for (let x = 0; x < size[0]; x += 1) {
       for (let y = 0; y < size[1]; y += 1) {
         for (let z = 0; z < size[2]; z += 1) {
-          const index = (y * size[0] * size[2]) + z * size[0] + x
+          const index = y * size[0] * size[2] + z * size[0] + x
           const pos = [x, y, z].toString()
           blocks.push({
             pos: [x, y, z],
@@ -290,7 +311,11 @@ export function litematic2Structure(root: NbtCompound) {
     regions.push({ pos, structure, name })
   })
 
-  const minPos: BlockPos = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]
+  const minPos: BlockPos = [
+    Number.MAX_SAFE_INTEGER,
+    Number.MAX_SAFE_INTEGER,
+    Number.MAX_SAFE_INTEGER,
+  ]
   for (const region of regions) {
     for (let i = 0; i < 3; i += 1) {
       minPos[i] = Math.min(minPos[i], region.pos[i])
@@ -310,8 +335,8 @@ export function schematic2Structure(root: NbtCompound) {
   const height = root.getNumber('Height')
   const length = root.getNumber('Length')
 
-  const blocksArray = root.getByteArray('Blocks').map(e => e.getAsNumber())
-  const dataArray = root.getByteArray('Data').map(e => e.getAsNumber())
+  const blocksArray = root.getByteArray('Blocks').map((e) => e.getAsNumber())
+  const dataArray = root.getByteArray('Data').map((e) => e.getAsNumber())
 
   const blockEntities = new Map<string, NbtCompound>()
   root.getList('TileEntities', NbtType.Compound).forEach((tag) => {
@@ -327,7 +352,7 @@ export function schematic2Structure(root: NbtCompound) {
   for (let x = 0; x < width; x += 1) {
     for (let y = 0; y < height; y += 1) {
       for (let z = 0; z < length; z += 1) {
-        const i = (y * width * length) + z * width + x
+        const i = y * width * length + z * width + x
         const blockStata = fromAlphaMaterial(blocksArray[i], dataArray[i])
         const nbt = blockEntities.get([x, y, z].toString())
         structure.addBlock([x, y, z], blockStata.getName(), blockStata.getProperties(), nbt)
@@ -339,23 +364,26 @@ export function schematic2Structure(root: NbtCompound) {
 }
 
 function toNbt(properties: { [key: string]: string }) {
-  return Object.entries(properties).reduce((c, [k, v]) => c.set(k, new NbtString(v)), NbtCompound.create())
+  return Object.entries(properties).reduce(
+    (c, [k, v]) => c.set(k, new NbtString(v)),
+    NbtCompound.create(),
+  )
 }
 
 export function structure2Nbt(structure: StructureProvider) {
-  const nbt = NbtFile.create();
-  const root = nbt.root;
+  const nbt = NbtFile.create()
+  const root = nbt.root
 
-  const size = BlockPos.toNbt(structure.getSize());
+  const size = BlockPos.toNbt(structure.getSize())
   root.set('size', size)
 
   const palette = NbtList.create()
   const blocks = NbtList.create()
 
   const blockNbt = (block: BlockState) => {
-    const compound = NbtCompound.create();
+    const compound = NbtCompound.create()
 
-    const name = new NbtString(block.getName().toString());
+    const name = new NbtString(block.getName().toString())
     compound.set('Name', name)
 
     const properties = toNbt(block.getProperties())
@@ -364,18 +392,21 @@ export function structure2Nbt(structure: StructureProvider) {
     return compound
   }
 
-  const paletteAdd = createPaletteManager<BlockState>(() => palette.length, block => palette.add(blockNbt(block)))
+  const paletteAdd = createPaletteManager<BlockState>(
+    () => palette.length,
+    (block) => palette.add(blockNbt(block)),
+  )
 
-  structure.getBlocks().forEach(block => {
-    const compound = NbtCompound.create();
+  structure.getBlocks().forEach((block) => {
+    const compound = NbtCompound.create()
 
     const pos = BlockPos.toNbt(block.pos)
     compound.set('pos', pos)
 
-    const state = new NbtInt(paletteAdd(block.state, block => block.toString()))
+    const state = new NbtInt(paletteAdd(block.state, (block) => block.toString()))
     compound.set('state', state)
 
-    const nbt = block.nbt;
+    const nbt = block.nbt
     if (nbt) compound.set('nbt', nbt)
 
     blocks.add(compound)
@@ -388,45 +419,55 @@ export function structure2Nbt(structure: StructureProvider) {
 }
 
 export function structure2destru(structure: StructureProvider) {
-  const nbt = NbtFile.create();
-  const root = nbt.root;
+  const nbt = NbtFile.create()
+  const root = nbt.root
 
   const palette = NbtList.create()
   const regions = NbtList.create()
 
-  const paletteAdd = createPaletteManager<{ state: BlockState, nbt?: NbtCompound }>(() => palette.length, block => {
-    const compound = NbtCompound.create();
+  const paletteAdd = createPaletteManager<{ state: BlockState; nbt?: NbtCompound }>(
+    () => palette.length,
+    (block) => {
+      const compound = NbtCompound.create()
 
-    compound.set('id', new NbtString(block.state.getName().toString()))
+      compound.set('id', new NbtString(block.state.getName().toString()))
 
-    const properties = toNbt(block.state.getProperties());
-    if (properties.size !== 0) compound.set('properties', properties)
+      const properties = toNbt(block.state.getProperties())
+      if (properties.size !== 0) compound.set('properties', properties)
 
-    if (block.nbt) compound.set('data', block.nbt)
+      if (block.nbt) compound.set('data', block.nbt)
 
-    palette.add(compound)
-  })
+      palette.add(compound)
+    },
+  )
 
   const sr: StructureRegion[] = []
 
   if (structure instanceof MultiStructure) sr.push(...structure['regions'])
-  else sr.push({ pos: [0, 0, 0], structure})
+  else sr.push({ pos: [0, 0, 0], structure })
 
-  sr.forEach(region => {
-    const compound = NbtCompound.create();
+  sr.forEach((region) => {
+    const compound = NbtCompound.create()
 
     compound.set('pos', new NbtIntArray(region.pos))
 
-    const size = region.structure.getSize();
+    const size = region.structure.getSize()
     compound.set('size', new NbtIntArray(size))
 
     const blocks = NbtIntArray.create()
-    const flat123 = createFlat123(size[0], size[2]);
+    const flat123 = createFlat123(size[0], size[2])
 
     for (let i = 0; i < region.structure.getBlocks().length; i++) {
-      const block = region.structure.getBlock(flat123(i));
+      const block = region.structure.getBlock(flat123(i))
       if (!block) continue
-      blocks.add(new NbtInt(paletteAdd({ state: block.state, nbt: block.nbt }, block => block.state.toString() + (block.nbt?.toString() ?? ''))))
+      blocks.add(
+        new NbtInt(
+          paletteAdd(
+            { state: block.state, nbt: block.nbt },
+            (block) => block.state.toString() + (block.nbt?.toString() ?? ''),
+          ),
+        ),
+      )
     }
 
     compound.set('blocks', blocks)

@@ -4,7 +4,8 @@ import {
   Identifier,
   ItemModel,
   type ItemRendererResources,
-  jsonToNbt, NbtTag,
+  jsonToNbt,
+  NbtTag,
   type Resources,
   TextureAtlas,
   upperPowerOfTwo,
@@ -17,7 +18,10 @@ import {
 } from '@/utils/deepslate/block-flags.util.ts'
 
 export class ResourceManager implements Resources, ItemRendererResources {
-  private readonly blocks: Map<string, { properties: Record<string, string[]> | null; default: Record<string, string> | null; }>
+  private readonly blocks: Map<
+    string,
+    { properties: Record<string, string[]> | null; default: Record<string, string> | null }
+  >
   private readonly blockDefinitions: { [id: string]: BlockDefinition }
   private readonly blockModels: { [id: string]: BlockModel }
   private readonly itemModels: { [id: string]: ItemModel }

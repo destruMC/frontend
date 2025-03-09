@@ -1,22 +1,22 @@
-import {ref} from 'vue';
-import {createRouter, createWebHistory} from "vue-router";
+import { ref } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
     path: '/',
-    component: () => import('@/pages/PageHome.vue')
+    component: () => import('@/pages/PageHome.vue'),
   },
   {
     path: '/structures',
-    component: () => import('@/pages/PageStructures.vue')
+    component: () => import('@/pages/PageStructures.vue'),
   },
   {
     path: '/structure/:id',
-    component: () => import('@/pages/PageStructure.vue')
+    component: () => import('@/pages/PageStructure.vue'),
   },
   {
     path: '/sign',
-    component: () => import('@/pages/PageSign.vue')
+    component: () => import('@/pages/PageSign.vue'),
   },
 ]
 
@@ -24,7 +24,7 @@ export const loadingBarApi = ref()
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
 })
 
 router.beforeEach((to, from, next) => {
@@ -44,4 +44,4 @@ router.afterEach((to, from) => {
   }
 })
 
-export default router;
+export default router

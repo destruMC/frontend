@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {ref, watchEffect} from "vue";
-import {useResourceStore} from "@/stores/resource.store.ts";
-import {storeToRefs} from "pinia";
-import {ItemRenderer, ItemStack} from "deepslate";
+import { ref, watchEffect } from 'vue'
+import { useResourceStore } from '@/stores/resource.store.ts'
+import { storeToRefs } from 'pinia'
+import { ItemRenderer, ItemStack } from 'deepslate'
 
 const props = defineProps<{
   item: ItemStack

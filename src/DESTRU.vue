@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import AppHeader from "@/components/AppHeader.vue";
-import AppFooter from "@/components/AppFooter.vue";
-import { useIsMobile } from "@/utils/composables.util.ts";
+import AppHeader from '@/components/AppHeader.vue'
+import AppFooter from '@/components/AppFooter.vue'
+import { useIsMobile } from '@/utils/composables.util.ts'
 import { loadingBarApi } from './routers/router'
-import {computed, onMounted} from "vue";
-import {useLoadingBar} from "naive-ui";
+import { computed, onMounted } from 'vue'
+import { useLoadingBar } from 'naive-ui'
 
-const isMobile = useIsMobile();
+const isMobile = useIsMobile()
 
-const p = computed(() => isMobile.value ? '0.5rem 1rem' : '1rem 2rem');
-const m = computed(() => isMobile.value ? '3rem' : '4rem');
-const h = computed(() => `calc(100vh - ${m.value})`);
+const p = computed(() => (isMobile.value ? '0.5rem 1rem' : '1rem 2rem'))
+const m = computed(() => (isMobile.value ? '3rem' : '4rem'))
+const h = computed(() => `calc(100vh - ${m.value})`)
 
 const loadingBar = useLoadingBar()
 

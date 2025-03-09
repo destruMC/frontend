@@ -1,4 +1,4 @@
-import {type FetchOptions, ofetch} from "ofetch";
+import { type FetchOptions, ofetch } from 'ofetch'
 
 const url = import.meta.env.VITE_API_URL
 
@@ -8,10 +8,10 @@ const api = ofetch.create({
 
 export default {
   getStructures(options?: FetchOptions) {
-    return api('/structures', options);
+    return api('/structures', options)
   },
 
   getStructure(id: String) {
-    return api(`/structure/${id}`);
+    return api(`/structure/${id}`)
   },
 }

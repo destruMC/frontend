@@ -10,11 +10,15 @@ import { computed, h, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '@/core/api.ts'
 import { md } from '@/utils/markdown.util.ts'
-import {loadStructure, structure2destru, structure2Nbt} from '@/utils/deepslate/structures.util.ts'
-import {BlockState, ItemStack, NbtFile, type StructureProvider} from 'deepslate'
+import {
+  loadStructure,
+  structure2destru,
+  structure2Nbt,
+} from '@/utils/deepslate/structures.util.ts'
+import { BlockState, ItemStack, NbtFile, type StructureProvider } from 'deepslate'
 import ItemRenderer from '@/components/renderers/ItemRenderer.vue'
-import { NButton, NFlex, NSelect, NIcon, useDialog } from 'naive-ui'
-import Pako from "pako";
+import { NButton, NFlex, NIcon, NSelect, useDialog } from 'naive-ui'
+import Pako from 'pako'
 
 const isMobile = useIsMobile()
 const s = computed(() => (isMobile.value ? '1rem' : '1.5rem'))
@@ -135,18 +139,19 @@ const infoData = ref()
 const dialog = useDialog()
 
 function handleDownload() {
-  const type = ref<"nbt" | "destru" | "sponge" | "litematic" | "schematic">()
+  const type = ref<'nbt' | 'destru' | 'sponge' | 'litematic' | 'schematic'>()
 
   function download(blob: Blob, type: string) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
     a.download = `${structureName.value}.${type}`
     a.click()
   }
 
   async function handleDownload() {
-    const blob = (handler: (structure: StructureProvider) => NbtFile) => new Blob([Pako.gzip(handler(structureRef.value).write())])
+    const blob = (handler: (structure: StructureProvider) => NbtFile) =>
+      new Blob([Pako.gzip(handler(structureRef.value).write())])
     switch (type.value) {
       case 'nbt': {
         if (!blobs.nbt.value) {
@@ -172,63 +177,61 @@ function handleDownload() {
     title: `下载 ${structureName.value}`,
     showIcon: false,
     bordered: true,
-    content: () => h(
-      NFlex,
-      {
-        vertical: true,
-      },
-      {
-        default: () => [
-          h(
-            NSelect,
-            {
-              placeholder: "文件类型",
+    content: () =>
+      h(
+        NFlex,
+        {
+          vertical: true,
+        },
+        {
+          default: () => [
+            h(NSelect, {
+              placeholder: '文件类型',
               value: type.value,
-              "onUpdate:value": (value) => { type.value = value },
-              renderTag: (props) => (
-                `文件类型：${props.option.label}`
-              ),
+              'onUpdate:value': (value) => {
+                type.value = value
+              },
+              renderTag: (props) => `文件类型：${props.option.label}`,
               options: [
                 {
                   label: 'NBT (*.nbt)',
-                  value: 'nbt'
+                  value: 'nbt',
                 },
                 {
                   label: 'destru (*.destru)',
-                  value: 'destru'
+                  value: 'destru',
                 },
                 {
                   label: 'Sponge (*.schem)',
                   value: 'sponge',
-                  disabled: true
+                  disabled: true,
                 },
                 {
                   label: 'Litematic (*.litematic)',
                   value: 'litematic',
-                  disabled: true
+                  disabled: true,
                 },
                 {
                   label: 'Schematic (*.schematic)',
                   value: 'schematic',
-                  disabled: true
+                  disabled: true,
                 },
-              ]
-            }
-          ),
-          h(
-            NButton,
-            {
-              type: 'primary',
-              disabled: !type.value,
-              onClick: () => handleDownload()
-            },
-            {
-              default: () => '下载',
-            }
-          )
-        ]
-      }
-    ),
+              ],
+            }),
+            h(
+              NButton,
+              {
+                type: 'primary',
+                disabled: !type.value,
+                onClick: () => handleDownload(),
+              },
+              {
+                default: () => '下载',
+              },
+            ),
+          ],
+        },
+      ),
   })
 }
 </script>
@@ -285,7 +288,7 @@ function handleDownload() {
                 :tabs-padding="p"
               >
                 <n-tab-pane name="model" tab="模型">
-                  <n-flex vertical justify="center" align="center" style="aspect-ratio: 16/9;">
+                  <n-flex vertical justify="center" align="center" style="aspect-ratio: 16/9">
                     <structure-renderer :structure="structureRef" :options="structureOptions" />
                   </n-flex>
                 </n-tab-pane>

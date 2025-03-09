@@ -1,25 +1,21 @@
 <script setup lang="ts">
-import IconLogo from "@/components/icons/IconLogo.vue";
-import IconCube from "@/components/icons/xicons/tabler/IconCube.vue";
-import IconApps from "@/components/icons/xicons/tabler/IconApps.vue";
-import {useLoadingBar} from "naive-ui";
+import IconLogo from '@/components/icons/IconLogo.vue'
+import IconCube from '@/components/icons/xicons/tabler/IconCube.vue'
+import IconApps from '@/components/icons/xicons/tabler/IconApps.vue'
+import { useLoadingBar } from 'naive-ui'
 
 const loadingBar = useLoadingBar()
 
 function handleError() {
-  loadingBar.error();
+  loadingBar.error()
 }
 </script>
 
 <template>
   <n-flex vertical align="center" justify="center" size="small">
     <n-icon size="12rem" :component="IconLogo" />
-    <n-h1>
-      分享 Minecraft 结构的网站
-    </n-h1>
-    <n-text>
-      在这里发现、展示、分享结构，<br />一起构建我的世界。
-    </n-text>
+    <n-h1> 分享 Minecraft 结构的网站 </n-h1>
+    <n-text> 在这里发现、展示、分享结构，<br />一起构建我的世界。 </n-text>
     <n-flex justify="center">
       <router-link to="/structures">
         <n-button type="primary">
