@@ -82,14 +82,14 @@ onMounted(() => {
 <template>
   <n-flex vertical :style="`width: 100%; gap: ${isMobile ? `0.5rem` : `1rem`};`">
     <n-h1> 结构列表 </n-h1>
-    <n-spin :show="isLoading" content-class="n-spin-content">
-      <n-empty v-if="!structures && !isLoading" :description="error" />
+    <n-spin class="full" :show="isLoading" content-style="height: 100%;">
+      <n-empty v-if="!structures && !isLoading" :description="error" class="empty"/>
       <n-grid v-if="structures" cols="1 s:2 m:3 l:4" x-gap="s:32" y-gap="16 s:32" responsive="screen">
         <n-gi v-for="structure in structures" :key="structure.id">
           <router-link :to="'/structure/' + structure.id">
             <n-card hoverable size="huge" :header-style="`padding: ${b} ${s};`" :content-style="`padding: 0 ${s} ${b};`">
               <template #header>
-                <n-h2>
+                <n-h2 class="name">
                   {{ structure.name }}
                 </n-h2>
               </template>
@@ -104,31 +104,23 @@ onMounted(() => {
         </n-gi>
       </n-grid>
     </n-spin>
-    <n-pagination
-      :page-count="pagination.total"
-      style="margin-left: auto"
-      @update-page="handlePageChange"
-    />
+    <n-pagination :page-count="pagination.total" style="margin-left: auto" @update-page="handlePageChange"/>
   </n-flex>
 </template>
 
 <style scoped>
-.n-h2 {
+.name {
   display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.n-spin {
+.full {
   height: 100%;
 }
 
-.n-grid {
-  margin-bottom: auto;
-}
-
-.n-spin-content {
+.empty {
   height: 100%;
   display: flex;
   justify-content: center;
