@@ -105,7 +105,7 @@ onMounted(() => {
               :content-style="`padding: 0 ${s} ${b};`"
             >
               <template #header>
-                <n-h2 class="name">
+                <n-h2>
                   {{ structure.name }}
                 </n-h2>
               </template>
@@ -135,7 +135,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.name {
+.n-h2 {
   display: block;
   white-space: nowrap;
   overflow: hidden;

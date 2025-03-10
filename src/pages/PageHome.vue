@@ -29,7 +29,7 @@ function handleError() {
         <template #icon>
           <n-icon :component="IconApps" />
         </template>
-        我的面板
+        在线编辑
       </n-button>
     </n-flex>
   </n-flex>

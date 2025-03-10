@@ -39,6 +39,7 @@ router.beforeEach((to, from, next) => {
 router.afterEach((to, from) => {
   if (!from || to.path !== from.path) {
     if (loadingBarApi.value) {
+      if (to.path.startsWith('/structure/')) return
       loadingBarApi.value.finish()
     }
   }
