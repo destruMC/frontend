@@ -42,6 +42,8 @@ class InteractiveCanvas {
   private xRot = 0.5
   private yRot = 0.5
   private dragPos: [number, number] | null = null
+  private pinchStartDist: number | null = null
+  private pinchStartViewDist: number | null = null
 
   private handleMouseDown = (evt: MouseEvent) => {
     if (evt.button === 0) {
@@ -64,6 +66,53 @@ class InteractiveCanvas {
     this.viewDist += evt.deltaY / 100
     this.redraw()
   }
+  private handleTouchStart = (evt: TouchEvent) => {
+    evt.preventDefault()
+    if (evt.touches.length === 1) {
+      const touch = evt.touches[0]
+      this.dragPos = [touch.clientX, touch.clientY]
+      this.pinchStartDist = null
+    } else if (evt.touches.length === 2) {
+      const t1 = evt.touches[0]
+      const t2 = evt.touches[1]
+      this.pinchStartDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY)
+      this.pinchStartViewDist = this.viewDist
+      this.dragPos = null
+    }
+  }
+  private handleTouchMove = (evt: TouchEvent) => {
+    evt.preventDefault()
+    if (evt.touches.length === 1 && this.dragPos) {
+      const touch = evt.touches[0]
+      this.yRot += (touch.clientX - this.dragPos[0]) / 100
+      this.xRot += (touch.clientY - this.dragPos[1]) / 100
+      this.dragPos = [touch.clientX, touch.clientY]
+      this.redraw()
+    } else if (
+      evt.touches.length === 2 &&
+      this.pinchStartDist &&
+      this.pinchStartViewDist !== null
+    ) {
+      const t1 = evt.touches[0]
+      const t2 = evt.touches[1]
+      const currentDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY)
+      const scale = currentDist / this.pinchStartDist
+      this.viewDist = this.pinchStartViewDist / scale
+      this.redraw()
+    }
+  }
+  private handleTouchEnd = (evt: TouchEvent) => {
+    if (evt.touches.length === 0) {
+      this.dragPos = null
+      this.pinchStartDist = null
+      this.pinchStartViewDist = null
+    } else if (evt.touches.length === 1) {
+      const touch = evt.touches[0]
+      this.dragPos = [touch.clientX, touch.clientY]
+      this.pinchStartDist = null
+      this.pinchStartViewDist = null
+    }
+  }
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -74,16 +123,22 @@ class InteractiveCanvas {
     private maxViewDist = viewDist ** 2,
   ) {
     canvas.addEventListener('mousedown', this.handleMouseDown)
-    canvas.addEventListener('mousemove', this.handleMouseMove)
+    canvas.ownerDocument.addEventListener('mousemove', this.handleMouseMove)
     canvas.ownerDocument.addEventListener('mouseup', this.handleMouseUp)
     canvas.addEventListener('wheel', this.handleWheel)
+    canvas.addEventListener('touchstart', this.handleTouchStart)
+    canvas.addEventListener('touchmove', this.handleTouchMove)
+    canvas.addEventListener('touchend', this.handleTouchEnd)
   }
 
   public destroy() {
     this.canvas.removeEventListener('mousedown', this.handleMouseDown)
-    this.canvas.removeEventListener('mousemove', this.handleMouseMove)
+    this.canvas.ownerDocument.removeEventListener('mousemove', this.handleMouseMove)
     this.canvas.ownerDocument.removeEventListener('mouseup', this.handleMouseUp)
     this.canvas.removeEventListener('wheel', this.handleWheel)
+    this.canvas.removeEventListener('touchstart', this.handleTouchStart)
+    this.canvas.removeEventListener('touchmove', this.handleTouchMove)
+    this.canvas.removeEventListener('touchend', this.handleTouchEnd)
   }
 
   public redraw() {

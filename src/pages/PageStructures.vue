@@ -82,41 +82,19 @@ onMounted(() => {
 <template>
   <n-flex vertical :style="`width: 100%; gap: ${isMobile ? `0.5rem` : `1rem`};`">
     <n-h1> 结构列表 </n-h1>
-    <n-spin
-      :show="isLoading"
-      class="full"
-      content-style="height: 100%; display: flex; justify-content: center; align-items: center;"
-    >
+    <n-spin :show="isLoading" content-class="n-spin-content">
       <n-empty v-if="!structures && !isLoading" :description="error" />
-      <n-grid
-        v-if="structures"
-        cols="1 s:2 m:3 l:4"
-        x-gap="s:32"
-        y-gap="16 s:32"
-        responsive="screen"
-        class="full"
-      >
+      <n-grid v-if="structures" cols="1 s:2 m:3 l:4" x-gap="s:32" y-gap="16 s:32" responsive="screen">
         <n-gi v-for="structure in structures" :key="structure.id">
           <router-link :to="'/structure/' + structure.id">
-            <n-card
-              hoverable
-              size="huge"
-              :header-style="`padding: ${b} ${s};`"
-              :content-style="`padding: 0 ${s} ${b};`"
-            >
+            <n-card hoverable size="huge" :header-style="`padding: ${b} ${s};`" :content-style="`padding: 0 ${s} ${b};`">
               <template #header>
                 <n-h2>
                   {{ structure.name }}
                 </n-h2>
               </template>
               <template #cover>
-                <n-image
-                  lazy
-                  preview-disabled
-                  :src="structure.image"
-                  object-fit="cover"
-                  style="width: 100%; aspect-ratio: 16/9"
-                />
+                <n-image lazy preview-disabled :src="structure.image" object-fit="cover" style="width: 100%; aspect-ratio: 16/9"/>
               </template>
               <span>
                 {{ structure.creator }}
@@ -142,7 +120,18 @@ onMounted(() => {
   text-overflow: ellipsis;
 }
 
-.full {
+.n-spin {
   height: 100%;
+}
+
+.n-grid {
+  margin-bottom: auto;
+}
+
+.n-spin-content {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
