@@ -11,7 +11,7 @@ export default {
     return api('/structures', options)
   },
 
-  getStructure(id: String) {
+  getStructure(id: string) {
     return api(`/structure/${id}`)
   },
 }

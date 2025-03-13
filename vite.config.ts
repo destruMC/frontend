@@ -37,5 +37,14 @@ export default defineConfig({
   },
   server: {
     allowedHosts: ['localhost'],
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vue: ['vue', 'vue-router', 'pinia']
+        }
+      }
+    }
   }
 })
