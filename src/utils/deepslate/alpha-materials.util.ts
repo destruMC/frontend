@@ -840,14 +840,22 @@ const alphaMaterialsUtil = {
   '131:13': 'tripwire_hook[powered=true,attached=true,facing=west]',
   '131:14': 'tripwire_hook[powered=true,attached=true,facing=north]',
   '131:15': 'tripwire_hook[powered=true,attached=true,facing=east]',
-  '132:0': 'tripwire[disarmed=false,east=false,powered=false,south=false,north=false,west=false,attached=false]',
-  '132:1': 'tripwire[disarmed=false,east=false,powered=true,south=false,north=false,west=false,attached=false]',
-  '132:4': 'tripwire[disarmed=false,east=false,powered=false,south=false,north=false,west=false,attached=true]',
-  '132:5': 'tripwire[disarmed=false,east=false,powered=true,south=false,north=false,west=false,attached=true]',
-  '132:8': 'tripwire[disarmed=true,east=false,powered=false,south=false,north=false,west=false,attached=false]',
-  '132:9': 'tripwire[disarmed=true,east=false,powered=true,south=false,north=false,west=false,attached=false]',
-  '132:12': 'tripwire[disarmed=true,east=false,powered=false,south=false,north=false,west=false,attached=true]',
-  '132:13': 'tripwire[disarmed=true,east=false,powered=true,south=false,north=false,west=false,attached=true]',
+  '132:0':
+    'tripwire[disarmed=false,east=false,powered=false,south=false,north=false,west=false,attached=false]',
+  '132:1':
+    'tripwire[disarmed=false,east=false,powered=true,south=false,north=false,west=false,attached=false]',
+  '132:4':
+    'tripwire[disarmed=false,east=false,powered=false,south=false,north=false,west=false,attached=true]',
+  '132:5':
+    'tripwire[disarmed=false,east=false,powered=true,south=false,north=false,west=false,attached=true]',
+  '132:8':
+    'tripwire[disarmed=true,east=false,powered=false,south=false,north=false,west=false,attached=false]',
+  '132:9':
+    'tripwire[disarmed=true,east=false,powered=true,south=false,north=false,west=false,attached=false]',
+  '132:12':
+    'tripwire[disarmed=true,east=false,powered=false,south=false,north=false,west=false,attached=true]',
+  '132:13':
+    'tripwire[disarmed=true,east=false,powered=true,south=false,north=false,west=false,attached=true]',
   '133:0': 'emerald_block',
   '134:0': 'spruce_stairs[half=bottom,shape=straight,facing=east]',
   '134:1': 'spruce_stairs[half=bottom,shape=straight,facing=west]',
@@ -1689,7 +1697,7 @@ const alphaMaterialsUtil = {
 
 const blockMap = new Map<number, Map<number, string>>()
 for (const [id, state] of Object.entries(alphaMaterialsUtil)) {
-  const [block, data] = id.split(':').map(s => Number(s))
+  const [block, data] = id.split(':').map((s) => Number(s))
   const dataMap = computeIfAbsent(blockMap, block, () => new Map<number, string>())
   computeIfAbsent(dataMap, data, () => state)
 }

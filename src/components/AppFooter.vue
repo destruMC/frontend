@@ -1,9 +1,5 @@
 <template>
-  <n-text>
-    destru
-  </n-text>
+  <n-text> destru </n-text>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

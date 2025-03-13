@@ -6,7 +6,7 @@ import IconHeart from '@/components/icons/xicons/tabler/IconHeart.vue'
 import IconStar from '@/components/icons/xicons/tabler/IconStar.vue'
 import IconDotsVertical from '@/components/icons/xicons/tabler/IconDotsVertical.vue'
 import { useIsMobile } from '@/utils/composables.util.ts'
-import {computed, h, onBeforeUnmount, onMounted, ref} from 'vue'
+import { computed, h, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '@/core/api.ts'
 import { md } from '@/utils/markdown.util.ts'
@@ -17,9 +17,9 @@ import {
 } from '@/utils/deepslate/structures.util.ts'
 import { BlockState, ItemStack, NbtFile, type StructureProvider } from 'deepslate'
 import ItemRenderer from '@/components/renderers/ItemRenderer.vue'
-import {NButton, NFlex, NIcon, NSelect, useDialog} from 'naive-ui'
+import { NButton, NFlex, NIcon, NSelect, useDialog } from 'naive-ui'
 import Pako from 'pako'
-import {loadingBarApi} from "@/routers/router.ts";
+import { loadingBarApi } from '@/routers/router.ts'
 
 const isMobile = useIsMobile()
 const s = computed(() => (isMobile.value ? '1rem' : '1.5rem'))
@@ -123,9 +123,9 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   if (isLoading.value) {
-    loadingBarApi.value?.finish();
+    loadingBarApi.value?.finish()
   }
-});
+})
 
 const tab = ref()
 

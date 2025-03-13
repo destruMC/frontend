@@ -1,4 +1,4 @@
 export interface File {
-  url: string;
-  created: Date;
+  url: string
+  created: Date
 }

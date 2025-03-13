@@ -83,18 +83,35 @@ onMounted(() => {
   <n-flex vertical :style="`width: 100%; gap: ${isMobile ? `0.5rem` : `1rem`};`">
     <n-h1> 结构列表 </n-h1>
     <n-spin class="full" :show="isLoading" content-style="height: 100%;">
-      <n-empty v-if="!structures && !isLoading" :description="error" class="empty"/>
-      <n-grid v-if="structures" cols="1 s:2 m:3 l:4" x-gap="s:32" y-gap="16 s:32" responsive="screen">
+      <n-empty v-if="!structures && !isLoading" :description="error" class="empty" />
+      <n-grid
+        v-if="structures"
+        cols="1 s:2 m:3 l:4"
+        x-gap="s:32"
+        y-gap="16 s:32"
+        responsive="screen"
+      >
         <n-gi v-for="structure in structures" :key="structure.id">
           <router-link :to="'/structure/' + structure.id">
-            <n-card hoverable size="huge" :header-style="`padding: ${b} ${s};`" :content-style="`padding: 0 ${s} ${b};`">
+            <n-card
+              hoverable
+              size="huge"
+              :header-style="`padding: ${b} ${s};`"
+              :content-style="`padding: 0 ${s} ${b};`"
+            >
               <template #header>
                 <n-h2 class="name">
                   {{ structure.name }}
                 </n-h2>
               </template>
               <template #cover>
-                <n-image lazy preview-disabled :src="structure.image" object-fit="cover" style="width: 100%; aspect-ratio: 16/9"/>
+                <n-image
+                  lazy
+                  preview-disabled
+                  :src="structure.image"
+                  object-fit="cover"
+                  style="width: 100%; aspect-ratio: 16/9"
+                />
               </template>
               <span>
                 {{ structure.creator }}
@@ -104,7 +121,11 @@ onMounted(() => {
         </n-gi>
       </n-grid>
     </n-spin>
-    <n-pagination :page-count="pagination.total" style="margin-left: auto" @update-page="handlePageChange"/>
+    <n-pagination
+      :page-count="pagination.total"
+      style="margin-left: auto"
+      @update-page="handlePageChange"
+    />
   </n-flex>
 </template>
 
