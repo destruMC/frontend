@@ -20,10 +20,12 @@ const themeOverrides = computed(() =>
     :locale="zhCN"
     :date-locale="dateZhCN"
   >
-    <n-loading-bar-provider>
+    <n-message-provider>
       <n-dialog-provider>
-        <d-e-s-t-r-u />
+        <n-loading-bar-provider>
+          <d-e-s-t-r-u />
+        </n-loading-bar-provider>
       </n-dialog-provider>
-    </n-loading-bar-provider>
+    </n-message-provider>
   </n-config-provider>
 </template>

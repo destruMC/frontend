@@ -1,14 +1,14 @@
 import type { File } from '@/types/file'
 import type { User } from '@/types/user'
 
-export interface StructurePreview {
+export type StructurePreview = {
   id: string
   name: string
   image: string
   creator: string
 }
 
-export interface Structure {
+export type Structure = {
   id: string
   name: string
   summary: string

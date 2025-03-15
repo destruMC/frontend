@@ -42,9 +42,12 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vue: ['vue', 'vue-router', 'pinia']
+          v: ['vue', 'vue-router', 'pinia'],
+          d: ['deepslate'],
         }
       }
-    }
+    },
+    minify: 'esbuild',
+    sourcemap: false,
   }
 })

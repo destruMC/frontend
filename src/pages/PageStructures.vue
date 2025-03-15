@@ -28,12 +28,7 @@ const loadStructures = async () => {
 
     let page = Math.max(1, Number(route.query.page) || 1)
 
-    const response = await api.getStructures({
-      params: {
-        page: page,
-        size: pagination.value.size,
-      },
-    })
+    const response = await api.getStructures(page === 1 ? undefined : page)
 
     if (response.pagination.page !== page) {
       page = response.pagination.page
