@@ -4,21 +4,57 @@ import IconTitle from '@/components/icons/IconTitle.vue'
 import IconLogin from '@/components/icons/xicons/tabler/IconLogin.vue'
 import { useUserStore } from '@/stores/user.store.ts'
 import { storeToRefs } from 'pinia'
-import { h } from 'vue'
-import { NButton, NIcon } from 'naive-ui'
+import { type Component, h } from 'vue'
+import { NButton, NIcon, NText, useThemeVars } from 'naive-ui'
 import IconLogout from '@/components/icons/xicons/tabler/IconLogout.vue'
+import IconHome from '@/components/icons/xicons/tabler/IconHome.vue'
+import { RouterLink } from 'vue-router'
+
+const theme = useThemeVars()
 
 const userStore = useUserStore()
 const { flag, user } = storeToRefs(userStore)
 
+const label = (label: string, type?: string, to?: string) => () => {
+  const result = h(
+    NText,
+    {
+      type,
+    },
+    {
+      default: () => label,
+    },
+  )
+
+  if (to) {
+    return h(
+      RouterLink,
+      {
+        to,
+      },
+      {
+        default: () => result,
+      },
+    )
+  }
+
+  return result
+}
+const icon = (icon: Component, color?: string) => () =>
+  h(NIcon, { component: () => h(icon), color })
 const options = [
   {
+    key: 'profile',
+    label: label('我的主页', undefined, '/profile'),
+    icon: icon(IconHome),
+  },
+  {
+    type: 'divider',
+  },
+  {
     key: 'logout',
-    label: () => '退出登录',
-    icon: () =>
-      h(NIcon, {
-        component: IconLogout,
-      }),
+    label: label('退出登录', 'error'),
+    icon: icon(IconLogout, theme.value.errorColor),
   },
 ]
 

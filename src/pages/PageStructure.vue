@@ -19,7 +19,7 @@ import { BlockState, ItemStack, NbtFile, type StructureProvider } from 'deepslat
 import ItemRenderer from '@/components/renderers/ItemRenderer.vue'
 import { NButton, NFlex, NIcon, NSelect, useDialog } from 'naive-ui'
 import pako from 'pako'
-import { loadingBarApi } from '@/routers/router.ts'
+import { loadingBarApi, setTitle } from '@/routers/router.ts'
 
 const isMobile = useIsMobile()
 const s = computed(() => (isMobile.value ? '1rem' : '1.5rem'))
@@ -62,6 +62,8 @@ const load = async () => {
     structureDescription.value = md.render(response.description)
     structureImages.value = response.images
     structureCreators.value = response.creators
+
+    setTitle(structureName.value, '结构')
 
     const file = await fetch(response.files[response.files.length - 1].url)
     const blob = await file.blob()
@@ -113,6 +115,7 @@ const load = async () => {
     error.value = '加载失败'
   } finally {
     isLoading.value = false
+    console.log(loadingBarApi.value)
     loadingBarApi.value?.finish()
   }
 }

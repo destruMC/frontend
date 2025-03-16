@@ -7,11 +7,24 @@ import api from '@/core/api.ts'
 import { useMessage } from 'naive-ui'
 import { sha3_256 } from 'js-sha3'
 import { FetchError } from 'ofetch'
-import router from '@/routers/router.ts'
+import router, { setTitle } from '@/routers/router.ts'
 import { useUserStore } from '@/stores/user.store.ts'
 import { zxcvbn } from '@zxcvbn-ts/core'
 
 const tab = ref()
+
+function handleChange(value: string) {
+  switch (value) {
+    case 'in': {
+      setTitle('登录')
+      break
+    }
+    case 'up': {
+      setTitle('注册')
+      break
+    }
+  }
+}
 
 const isMobile = useIsMobile()
 
@@ -96,6 +109,8 @@ async function handleUp() {
     upPasswordValue.value = undefined
     upRepeatValue.value = undefined
     message.success('注册成功')
+    inNameNotfound.value = undefined
+    inPasswordValue.value = undefined
     tab.value = 'in'
   } catch (error) {
     if (error instanceof FetchError && error.response?._data?.reason === 'NameExists') {
@@ -197,6 +212,7 @@ async function handleIn() {
         justify-content="space-evenly"
         animated
         v-model:value="tab"
+        @update:value="handleChange"
       >
         <n-tab-pane name="in" tab="登录">
           <n-flex vertical align="center" style="gap: 0">

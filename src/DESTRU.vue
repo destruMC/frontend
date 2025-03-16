@@ -16,7 +16,6 @@ const loadingBar = useLoadingBar()
 
 onMounted(() => {
   loadingBarApi.value = loadingBar
-  loadingBar.finish()
 })
 </script>
 

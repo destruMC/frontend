@@ -44,7 +44,10 @@ export default defineConfig({
         manualChunks: {
           v: ['vue', 'vue-router', 'pinia'],
           d: ['deepslate'],
-        }
+        },
+        entryFileNames: '[hash].js',
+        chunkFileNames: '[hash].js',
+        assetFileNames: '[hash].[ext]',
       }
     },
     minify: 'esbuild',

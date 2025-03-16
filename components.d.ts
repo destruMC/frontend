@@ -16,6 +16,7 @@ declare module 'vue' {
     IconEye: typeof import('./src/components/icons/xicons/tabler/IconEye.vue')['default']
     IconEyeOff: typeof import('./src/components/icons/xicons/tabler/IconEyeOff.vue')['default']
     IconHeart: typeof import('./src/components/icons/xicons/tabler/IconHeart.vue')['default']
+    IconHome: typeof import('./src/components/icons/xicons/tabler/IconHome.vue')['default']
     IconLogin: typeof import('./src/components/icons/xicons/tabler/IconLogin.vue')['default']
     IconLogo: typeof import('./src/components/icons/IconLogo.vue')['default']
     IconLogout: typeof import('./src/components/icons/xicons/tabler/IconLogout.vue')['default']
