@@ -115,7 +115,6 @@ const load = async () => {
     error.value = '加载失败'
   } finally {
     isLoading.value = false
-    console.log(loadingBarApi.value)
     loadingBarApi.value?.finish()
   }
 }
