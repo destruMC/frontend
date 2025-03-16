@@ -46,7 +46,7 @@ const icon = (icon: Component, color?: string) => () =>
 const options = ref([
   {
     key: 'profile',
-    label: label('个人资料', undefined, () => `/user/${ localStorage.getItem('id') }`),
+    label: label('个人资料', undefined, () => `/user/${localStorage.getItem('id')}`),
     icon: icon(IconUser),
   },
   {

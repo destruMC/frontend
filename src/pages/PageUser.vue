@@ -38,7 +38,7 @@ const load = async () => {
 const userStore = useUserStore()
 const { flag, user } = storeToRefs(userStore)
 const editable = computed(() => {
-  return user.value && (user.value['id'] === localStorage.getItem('id')) && flag.value
+  return user.value && user.value['id'] === localStorage.getItem('id') && flag.value
 })
 
 onMounted(() => {
@@ -64,9 +64,7 @@ onBeforeUnmount(() => {
           </n-h1>
         </n-flex>
         <router-link v-if="editable" to="/settings/profile">
-          <n-button secondary>
-            编辑资料
-          </n-button>
+          <n-button secondary> 编辑资料 </n-button>
         </router-link>
       </n-flex>
     </n-flex>
