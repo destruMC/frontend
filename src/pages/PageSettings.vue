@@ -1,7 +1,11 @@
 <script setup lang="ts">
-const id = localStorage.getItem('id')
+
 </script>
 
 <template>
-  {{ id }}
+TEST
 </template>
+
+<style scoped>
+
+</style>

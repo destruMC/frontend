@@ -29,10 +29,18 @@ const routes = [
     },
   },
   {
-    path: '/profile',
-    component: () => import('@/pages/PageProfile.vue'),
+    path: '/user/:id',
+    component: () => import('@/pages/PageUser.vue'),
     meta: {
-      title: '个人空间',
+      title: '加载中',
+      scope: '用户',
+    },
+  },
+  {
+    path: '/settings/:options',
+    component: () => import('@/pages/PageSettings.vue'),
+    meta: {
+      title: '设置',
     },
   },
 ]
@@ -55,7 +63,6 @@ export function setTitle(title?: unknown, scope?: unknown) {
 
 router.beforeEach((to, from, next) => {
   if (!from || to.path !== from.path) {
-    setTitle(to.meta.title, to.meta.scope)
     if (loadingBarApi.value) {
       loadingBarApi.value.start()
     }
@@ -65,8 +72,10 @@ router.beforeEach((to, from, next) => {
 
 router.afterEach((to, from) => {
   if (!from || to.path !== from.path) {
+    setTitle(to.meta.title, to.meta.scope)
     if (loadingBarApi.value) {
       if (to.path.startsWith('/structure/')) return
+      if (to.path.startsWith('/user/')) return
       loadingBarApi.value.finish()
     }
   }

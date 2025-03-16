@@ -4,18 +4,19 @@ import IconTitle from '@/components/icons/IconTitle.vue'
 import IconLogin from '@/components/icons/xicons/tabler/IconLogin.vue'
 import { useUserStore } from '@/stores/user.store.ts'
 import { storeToRefs } from 'pinia'
-import { type Component, h } from 'vue'
+import { type Component, h, ref } from 'vue'
 import { NButton, NIcon, NText, useThemeVars } from 'naive-ui'
 import IconLogout from '@/components/icons/xicons/tabler/IconLogout.vue'
-import IconHome from '@/components/icons/xicons/tabler/IconHome.vue'
 import { RouterLink } from 'vue-router'
+import IconUser from '@/components/icons/xicons/tabler/IconUser.vue'
+import IconSettings from '@/components/icons/xicons/tabler/IconSettings.vue'
 
 const theme = useThemeVars()
 
 const userStore = useUserStore()
 const { flag, user } = storeToRefs(userStore)
 
-const label = (label: string, type?: string, to?: string) => () => {
+const label = (label: string, type?: string, to?: () => string) => () => {
   const result = h(
     NText,
     {
@@ -30,7 +31,7 @@ const label = (label: string, type?: string, to?: string) => () => {
     return h(
       RouterLink,
       {
-        to,
+        to: to(),
       },
       {
         default: () => result,
@@ -42,11 +43,16 @@ const label = (label: string, type?: string, to?: string) => () => {
 }
 const icon = (icon: Component, color?: string) => () =>
   h(NIcon, { component: () => h(icon), color })
-const options = [
+const options = ref([
   {
     key: 'profile',
-    label: label('我的主页', undefined, '/profile'),
-    icon: icon(IconHome),
+    label: label('个人资料', undefined, () => `/user/${ localStorage.getItem('id') }`),
+    icon: icon(IconUser),
+  },
+  {
+    key: 'settings',
+    label: label('设置', undefined, () => '/settings/appearance'),
+    icon: icon(IconSettings),
   },
   {
     type: 'divider',
@@ -56,7 +62,7 @@ const options = [
     label: label('退出登录', 'error'),
     icon: icon(IconLogout, theme.value.errorColor),
   },
-]
+])
 
 async function handleSelect(key: string) {
   switch (key) {

@@ -113,6 +113,7 @@ const load = async () => {
     ]
   } catch (e) {
     error.value = '加载失败'
+    setTitle(error.value, '结构')
   } finally {
     isLoading.value = false
     loadingBarApi.value?.finish()

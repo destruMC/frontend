@@ -171,7 +171,7 @@ async function handleIn() {
     localStorage.setItem('id', id)
     await userStore.set(id)
     message.success('登录成功')
-    await router.replace('/')
+    await router.push('/')
   } catch (error) {
     if (error instanceof FetchError) {
       switch (error.status) {
