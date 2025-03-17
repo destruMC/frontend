@@ -1,8 +1,14 @@
 import { defineStore } from 'pinia'
 import api from '@/core/api.ts'
+import type { User } from '@/types/user'
+
+type UserStore = {
+  flag: boolean
+  user: User | null
+}
 
 export const useUserStore = defineStore('user', {
-  state: () => ({
+  state: (): UserStore => ({
     flag: false,
     user: null,
   }),
@@ -11,7 +17,8 @@ export const useUserStore = defineStore('user', {
     async set(id?: string) {
       if (id) {
         this.flag = true
-        const { user } = await api.getUser(id)
+        const { name } = await api.getUserName(id)
+        const { user } = await api.getUser(name)
         this.user = user
       } else {
         this.flag = false

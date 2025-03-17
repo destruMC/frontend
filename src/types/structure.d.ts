@@ -1,5 +1,5 @@
 import type { File } from '@/types/file'
-import type { User } from '@/types/user'
+import type { User, UserPreview } from '@/types/user'
 
 export type StructurePreview = {
   id: string
@@ -15,6 +15,6 @@ export type Structure = {
   description: string
   files: File[]
   images: File[]
-  creators: User[]
+  creators: UserPreview[]
   created: Date
 }

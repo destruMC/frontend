@@ -36,8 +36,14 @@ export default {
     })
   },
 
-  getUser(id: string) {
-    return api(`/user/${id}`, {
+  getUser(name: string) {
+    return api(`/user/${name}`, {
+      credentials: 'include',
+    })
+  },
+
+  getUserName(id: string) {
+    return api(`/user/${id}/name`, {
       credentials: 'include',
     })
   },

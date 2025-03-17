@@ -317,19 +317,18 @@ function handleDownload() {
                   :tabs-padding="p"
                 >
                   <n-tab-pane name="model" tab="模型">
-                    <n-flex vertical justify="center" align="center" style="aspect-ratio: 16/9">
+                    <n-flex class="ar169">
                       <structure-renderer :structure="structureRef" :options="structureOptions" />
                     </n-flex>
                   </n-tab-pane>
                   <n-tab-pane name="images" tab="图片">
-                    <n-carousel style="aspect-ratio: 16/9" mousewheel>
+                    <n-carousel class="ar169" mousewheel>
                       <n-image
                         lazy
                         v-for="image in structureImages"
                         v-bind:key="image"
                         :src="image.url"
                         object-fit="cover"
-                        style="width: 100%; aspect-ratio: 16/9"
                       />
                     </n-carousel>
                   </n-tab-pane>
@@ -405,5 +404,14 @@ function handleDownload() {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.n-image {
+  width: 100%;
+  aspect-ratio: 16/9;
+}
+
+.ar169 {
+  aspect-ratio: 16/9;
 }
 </style>

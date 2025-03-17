@@ -5,7 +5,7 @@ import IconLogin from '@/components/icons/xicons/tabler/IconLogin.vue'
 import { useUserStore } from '@/stores/user.store.ts'
 import { storeToRefs } from 'pinia'
 import { type Component, h, ref } from 'vue'
-import { NButton, NIcon, NText, useThemeVars } from 'naive-ui'
+import { NButton, NIcon, NText, useMessage, useThemeVars } from 'naive-ui'
 import IconLogout from '@/components/icons/xicons/tabler/IconLogout.vue'
 import { RouterLink } from 'vue-router'
 import IconUser from '@/components/icons/xicons/tabler/IconUser.vue'
@@ -41,12 +41,12 @@ const label = (label: string, type?: string, to?: () => string) => () => {
 
   return result
 }
-const icon = (icon: Component, color?: string) => () =>
-  h(NIcon, { component: () => h(icon), color })
+const icon = (icon: Component, color?: () => string) => () =>
+  h(NIcon, { component: () => h(icon), color: color ? color() : undefined })
 const options = ref([
   {
     key: 'profile',
-    label: label('个人资料', undefined, () => `/user/${localStorage.getItem('id')}`),
+    label: label('个人资料', undefined, () => `/user/${user.value?.name}`),
     icon: icon(IconUser),
   },
   {
@@ -60,14 +60,17 @@ const options = ref([
   {
     key: 'logout',
     label: label('退出登录', 'error'),
-    icon: icon(IconLogout, theme.value.errorColor),
+    icon: icon(IconLogout, () => theme.value.errorColor),
   },
 ])
+
+const message = useMessage()
 
 async function handleSelect(key: string) {
   switch (key) {
     case 'logout': {
       localStorage.removeItem('id')
+      message.success('已退出登录')
       await userStore.set(undefined)
       break
     }
@@ -92,8 +95,8 @@ async function handleSelect(key: string) {
       </n-button>
     </router-link>
     <n-button v-if="flag" text>
-      <n-dropdown trigger="click" @select="handleSelect" :options="options">
-        <n-avatar round :size="32" :src="user ? user['avatar'] : ''" />
+      <n-dropdown trigger="click" @select="handleSelect" :options>
+        <n-avatar round :size="32" :src="user?.avatar || ''" />
       </n-dropdown>
     </n-button>
   </nav>

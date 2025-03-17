@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { onBeforeRouteUpdate, useRoute } from 'vue-router'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { loadingBarApi, setTitle } from '@/routers/router.ts'
 import api from '@/core/api.ts'
@@ -7,22 +7,20 @@ import { NFlex } from 'naive-ui'
 import { useIsMobile } from '@/utils/composables.util.ts'
 import { useUserStore } from '@/stores/user.store.ts'
 import { storeToRefs } from 'pinia'
+import type { User } from '@/types/user'
 
 const isMobile = useIsMobile()
 const g = computed(() => (isMobile.value ? '1rem' : '2rem'))
 
-const route = useRoute()
-
 const isLoading = ref(true)
 const error = ref()
+const userRef = ref<User>()
 
-const userRef = ref()
-
-const load = async () => {
+const load = async (name: string) => {
   try {
     isLoading.value = true
 
-    const { user } = await api.getUser(route.params.id.toString())
+    const { user } = await api.getUser(name)
     userRef.value = user
 
     setTitle(user.name, '用户')
@@ -36,13 +34,21 @@ const load = async () => {
 }
 
 const userStore = useUserStore()
-const { flag, user } = storeToRefs(userStore)
+const { flag } = storeToRefs(userStore)
 const editable = computed(() => {
-  return user.value && user.value['id'] === localStorage.getItem('id') && flag.value
+  return userRef.value && userRef.value.id === localStorage.getItem('id') && flag.value
 })
 
 onMounted(() => {
-  load()
+  const route = useRoute()
+  load(route.params.name.toString())
+})
+
+onBeforeRouteUpdate((to, from, next) => {
+  if (to.params.name !== from.params.name) {
+    load(to.params.name.toString())
+  }
+  next()
 })
 
 onBeforeUnmount(() => {
@@ -57,11 +63,14 @@ onBeforeUnmount(() => {
     <n-empty v-if="!userRef && !isLoading" :description="error" />
     <n-flex v-if="userRef">
       <n-flex vertical :style="`gap: ${g};`">
-        <n-avatar round :size="256" :src="userRef['avatar']" />
+        <n-avatar round :size="256" :src="userRef.avatar" />
         <n-flex vertical>
           <n-h1>
-            {{ userRef['name'] }}
+            {{ userRef.slug ? userRef.slug : userRef.name }}
           </n-h1>
+          <n-text depth="3" v-if="userRef.slug">
+            {{ userRef.name }}
+          </n-text>
         </n-flex>
         <router-link v-if="editable" to="/settings/profile">
           <n-button secondary> 编辑资料 </n-button>

@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import type { User } from '@/types/user'
+import type { UserPreview } from '@/types/user'
 
 defineProps<{
-  user: User
+  user: UserPreview
 }>()
 </script>
 
 <template>
-  <n-flex align="center">
-    <n-avatar round :src="user.avatar" />
-    {{ user.name }}
-  </n-flex>
+  <router-link :to="`/user/${user.name}`">
+    <n-flex align="center">
+      <n-avatar round :src="user.avatar" />
+      <n-text>
+        {{ user.slug ? user.slug : user.name }}
+      </n-text>
+    </n-flex>
+  </router-link>
 </template>

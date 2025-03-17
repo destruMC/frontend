@@ -29,7 +29,7 @@ const routes = [
     },
   },
   {
-    path: '/user/:id',
+    path: '/user/:name',
     component: () => import('@/pages/PageUser.vue'),
     meta: {
       title: '加载中',
@@ -37,7 +37,7 @@ const routes = [
     },
   },
   {
-    path: '/settings/:options',
+    path: '/settings/:option',
     component: () => import('@/pages/PageSettings.vue'),
     meta: {
       title: '设置',

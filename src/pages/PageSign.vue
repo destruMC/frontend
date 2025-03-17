@@ -217,10 +217,10 @@ async function handleIn() {
         <n-tab-pane name="in" tab="登录">
           <n-flex vertical align="center" style="gap: 0">
             <n-form :show-label="false">
-              <n-form-item-row :feedback="inNameFeedback" :validation-status="inNameStatus">
+              <n-form-item :feedback="inNameFeedback" :validation-status="inNameStatus">
                 <n-input placeholder="名称" v-model:value="inNameValue" />
-              </n-form-item-row>
-              <n-form-item-row :validation-status="inPasswordStatus">
+              </n-form-item>
+              <n-form-item :validation-status="inPasswordStatus">
                 <n-input
                   type="password"
                   :show-password-on
@@ -238,7 +238,7 @@ async function handleIn() {
                   {{ inPasswordFeedback }}
                   <n-checkbox v-model:checked="remember"> 记住我 </n-checkbox>
                 </template>
-              </n-form-item-row>
+              </n-form-item>
             </n-form>
             <n-spin v-if="signingIn" />
             <n-button
@@ -254,7 +254,7 @@ async function handleIn() {
         <n-tab-pane name="up" tab="注册">
           <n-flex vertical align="center" style="gap: 0">
             <n-form :show-label="false">
-              <n-form-item-row :feedback="upNameFeedback" :validation-status="upNameStatus">
+              <n-form-item :feedback="upNameFeedback" :validation-status="upNameStatus">
                 <n-input
                   placeholder="名称"
                   minlength="3"
@@ -263,8 +263,8 @@ async function handleIn() {
                   :allow-input="name"
                   v-model:value="upNameValue"
                 />
-              </n-form-item-row>
-              <n-form-item-row :feedback="upPasswordFeedback" :validation-status="upPasswordStatus">
+              </n-form-item>
+              <n-form-item :feedback="upPasswordFeedback" :validation-status="upPasswordStatus">
                 <n-input
                   type="password"
                   :show-password-on
@@ -278,8 +278,8 @@ async function handleIn() {
                     <n-icon :component="IconEyeOff" />
                   </template>
                 </n-input>
-              </n-form-item-row>
-              <n-form-item-row :feedback="upRepeatFeedback" :validation-status="upRepeatStatus">
+              </n-form-item>
+              <n-form-item :feedback="upRepeatFeedback" :validation-status="upRepeatStatus">
                 <n-input
                   type="password"
                   :show-password-on
@@ -294,7 +294,7 @@ async function handleIn() {
                     <n-icon :component="IconEyeOff" />
                   </template>
                 </n-input>
-              </n-form-item-row>
+              </n-form-item>
             </n-form>
             <n-spin v-if="signingUp" />
             <n-button
