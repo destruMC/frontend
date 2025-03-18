@@ -17,9 +17,11 @@ import {
 } from '@/utils/deepslate/structures.util.ts'
 import { BlockState, ItemStack, NbtFile, type StructureProvider } from 'deepslate'
 import ItemRenderer from '@/components/renderers/ItemRenderer.vue'
-import { NButton, NFlex, NIcon, NSelect, useDialog } from 'naive-ui'
+import { NButton, NFlex, NIcon, NSelect, useDialog, useThemeVars } from 'naive-ui'
 import pako from 'pako'
 import { loadingBarApi, setTitle } from '@/routers/router.ts'
+
+const theme = useThemeVars()
 
 const isMobile = useIsMobile()
 const s = computed(() => (isMobile.value ? '1rem' : '1.5rem'))
@@ -315,6 +317,7 @@ function handleDownload() {
                   :tab-style="`padding: ${b} 0;`"
                   :bar-width="0"
                   :tabs-padding="p"
+                  :pane-wrapper-style="`background-color: ${theme.bodyColor}`"
                 >
                   <n-tab-pane name="model" tab="模型">
                     <n-flex class="ar169">

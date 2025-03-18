@@ -5,6 +5,9 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/routers/router.ts'
 import type { StructurePreview } from '@/types/structure'
+import { useThemeVars } from 'naive-ui'
+
+const theme = useThemeVars()
 
 const isMobile = useIsMobile()
 const route = useRoute()
@@ -105,7 +108,7 @@ onMounted(() => {
                   preview-disabled
                   :src="structure.image"
                   object-fit="cover"
-                  style="width: 100%; aspect-ratio: 16/9"
+                  :style="`width: 100%; aspect-ratio: 16/9; background-color: ${theme.bodyColor};`"
                 />
               </template>
               <span>

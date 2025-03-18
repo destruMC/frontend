@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@zxcvbn-ts/core": "^3.0.4",
-    "deepslate": "^0.23.5",
+    "deepslate": "https://github.com/KKW557/deepslate.git",
     "js-sha3": "^0.9.3",
     "markdown-it": "^14.1.0",
     "ofetch": "^1.4.1",
