@@ -7,6 +7,29 @@ const api = ofetch.create({
 })
 
 export default {
+  register(name: string, password: string) {
+    return api('/auths/register', {
+      method: 'POST',
+      credentials: 'include',
+      body: { name, password },
+    })
+  },
+
+  login(name: string, password: string, remember?: boolean) {
+    return api(`/auths/login`, {
+      method: 'POST',
+      credentials: 'include',
+      body: { name, password, remember },
+    })
+  },
+
+  logout() {
+    return api(`/auths/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+  },
+
   getStructures(page?: number, size?: number) {
     return api('/structures', {
       credentials: 'include',
@@ -17,22 +40,6 @@ export default {
   getStructure(id: string) {
     return api(`/structures/${id}`, {
       credentials: 'include',
-    })
-  },
-
-  register(name: string, password: string) {
-    return api('/register', {
-      method: 'POST',
-      credentials: 'include',
-      body: { name, password },
-    })
-  },
-
-  login(name: string, password: string, remember?: boolean) {
-    return api(`/login`, {
-      method: 'POST',
-      credentials: 'include',
-      body: { name, password, remember },
     })
   },
 

@@ -52,7 +52,7 @@ export default defineConfig({
     minify: 'esbuild',
     sourcemap: false,
   },
-  esbuild: {
-    drop: ['console', 'debugger']
-  }
+  // esbuild: {
+  //   drop: ['console', 'debugger']
+  // }
 })

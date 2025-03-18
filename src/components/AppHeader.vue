@@ -10,6 +10,7 @@ import IconLogout from '@/components/icons/xicons/tabler/IconLogout.vue'
 import { RouterLink } from 'vue-router'
 import IconUser from '@/components/icons/xicons/tabler/IconUser.vue'
 import IconSettings from '@/components/icons/xicons/tabler/IconSettings.vue'
+import api from '@/core/api.ts'
 
 const theme = useThemeVars()
 
@@ -72,6 +73,7 @@ async function handleSelect(key: string) {
       localStorage.removeItem('id')
       message.success('已退出登录')
       await userStore.set(undefined)
+      await api.logout()
       break
     }
   }

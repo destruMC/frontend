@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { type Component, computed, h } from 'vue'
+import { type Component, computed, h, ref } from 'vue'
 import { NIcon } from 'naive-ui'
 import IconUser from '@/components/icons/xicons/tabler/IconUser.vue'
 import IconPalette from '@/components/icons/xicons/tabler/IconPalette.vue'
 import IconShield from '@/components/icons/xicons/tabler/IconShield.vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useIsMobile } from '@/utils/composables.util.ts'
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user.store.ts'
 
 const isMobile = useIsMobile()
 const g = computed(() => (isMobile.value ? '1rem' : '2rem'))
@@ -27,6 +29,9 @@ const options = [
   option('资料', 'profile', IconUser),
   option('账户', 'account', IconShield),
 ]
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
 </script>
 
 <template>
