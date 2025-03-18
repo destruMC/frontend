@@ -20,7 +20,7 @@ const load = async (name: string) => {
   try {
     isLoading.value = true
 
-    const { user } = await api.getUser(name)
+    const { user } = await api.getUserByName(name)
     userRef.value = user
 
     setTitle(user.name, '用户')

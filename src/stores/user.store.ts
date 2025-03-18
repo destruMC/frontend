@@ -17,8 +17,7 @@ export const useUserStore = defineStore('user', {
     async set(id?: string) {
       if (id) {
         this.flag = true
-        const { name } = await api.getUserName(id)
-        const { user } = await api.getUser(name)
+        const { user } = await api.getUser(id)
         this.user = user
       } else {
         this.flag = false

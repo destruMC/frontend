@@ -15,7 +15,7 @@ export default {
   },
 
   getStructure(id: string) {
-    return api(`/structure/${id}`, {
+    return api(`/structures/${id}`, {
       credentials: 'include',
     })
   },
@@ -36,14 +36,14 @@ export default {
     })
   },
 
-  getUser(name: string) {
-    return api(`/user/${name}`, {
+  getUser(id: string) {
+    return api(`/users/${id}`, {
       credentials: 'include',
     })
   },
 
-  getUserName(id: string) {
-    return api(`/user/${id}/name`, {
+  getUserByName(name: string) {
+    return api(`/users/by/name/${name}`, {
       credentials: 'include',
     })
   },
