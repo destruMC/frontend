@@ -15,10 +15,10 @@ app.use(createPinia())
 const resourceStore = useResourceStore()
 resourceStore.load()
 
-const userStore = useUserStore()
-const item = localStorage.getItem('id')
-if (item) {
-  userStore.set(item)
+const user = localStorage.getItem('user')
+if (user) {
+  const userStore = useUserStore()
+  userStore.set(JSON.parse(user))
 }
 
 app.mount('#app')

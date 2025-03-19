@@ -2,15 +2,14 @@
 import IconLogo from '@/components/icons/IconLogo.vue'
 import IconTitle from '@/components/icons/IconTitle.vue'
 import IconLogin from '@/components/icons/xicons/tabler/IconLogin.vue'
-import { useUserStore } from '@/stores/user.store.ts'
-import { storeToRefs } from 'pinia'
 import { type Component, h, ref } from 'vue'
 import { NButton, NIcon, NText, useMessage, useThemeVars } from 'naive-ui'
 import IconLogout from '@/components/icons/xicons/tabler/IconLogout.vue'
 import { RouterLink } from 'vue-router'
 import IconUser from '@/components/icons/xicons/tabler/IconUser.vue'
 import IconSettings from '@/components/icons/xicons/tabler/IconSettings.vue'
-import api from '@/core/api.ts'
+import { useUserStore } from '@/stores/user.store.ts'
+import { storeToRefs } from 'pinia'
 
 const theme = useThemeVars()
 
@@ -47,7 +46,9 @@ const icon = (icon: Component, color?: () => string) => () =>
 const options = ref([
   {
     key: 'profile',
-    label: label('个人资料', undefined, () => `/user/${user.value?.name}`),
+    label: label('个人资料', undefined, () => {
+      return `/user/${user.value?.name}`
+    }),
     icon: icon(IconUser),
   },
   {
@@ -70,10 +71,8 @@ const message = useMessage()
 async function handleSelect(key: string) {
   switch (key) {
     case 'logout': {
-      localStorage.removeItem('id')
+      userStore.clear()
       message.success('已退出登录')
-      await userStore.set(undefined)
-      await api.logout()
       break
     }
   }
@@ -98,7 +97,7 @@ async function handleSelect(key: string) {
     </router-link>
     <n-button v-if="flag" text>
       <n-dropdown trigger="click" @select="handleSelect" :options>
-        <n-avatar round :size="32" :src="user?.avatar || ''" />
+        <n-avatar round :size="32" :src="user?.avatar" />
       </n-dropdown>
     </n-button>
   </nav>

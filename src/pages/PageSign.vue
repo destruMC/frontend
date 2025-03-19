@@ -8,8 +8,10 @@ import { useMessage } from 'naive-ui'
 import { sha3_256 } from 'js-sha3'
 import { FetchError } from 'ofetch'
 import router, { setTitle } from '@/routers/router.ts'
-import { useUserStore } from '@/stores/user.store.ts'
 import { zxcvbn } from '@zxcvbn-ts/core'
+import { useUserStore } from '@/stores/user.store.ts'
+
+const userStore = useUserStore()
 
 const tab = ref()
 
@@ -158,18 +160,15 @@ const remember = ref()
 
 const signingIn = ref()
 
-const userStore = useUserStore()
-
 async function handleIn() {
   try {
     signingIn.value = true
-    const { id } = await api.login(
+    const user = await api.login(
       inNameValue.value,
       sha3_256(inPasswordValue.value),
       remember.value ? true : undefined,
     )
-    localStorage.setItem('id', id)
-    await userStore.set(id)
+    userStore.set(user)
     message.success('登录成功')
     await router.push('/')
   } catch (error) {
