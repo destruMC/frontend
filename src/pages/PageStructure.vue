@@ -8,7 +8,6 @@ import IconDotsVertical from '@/components/icons/xicons/tabler/IconDotsVertical.
 import { useIsMobile } from '@/utils/composables.util.ts'
 import { computed, h, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import api from '@/core/api.ts'
 import { md } from '@/utils/markdown.util.ts'
 import {
   loadStructure,
@@ -17,9 +16,11 @@ import {
 } from '@/utils/deepslate/structures.util.ts'
 import { BlockState, ItemStack, NbtFile, type StructureProvider } from 'deepslate'
 import ItemRenderer from '@/components/renderers/ItemRenderer.vue'
-import { NButton, NFlex, NIcon, NSelect, useDialog, useThemeVars } from 'naive-ui'
+import { NButton, NFlex, NIcon, NSelect, useDialog, useLoadingBar, useThemeVars } from 'naive-ui'
 import pako from 'pako'
 import { loadingBarApi, setTitle } from '@/routers/router.ts'
+import structure_api from '@/core/api/structure.ts'
+import ReloadableEmpty from '@/components/ReloadableEmpty.vue'
 
 const theme = useThemeVars()
 
@@ -33,7 +34,7 @@ const structureName = ref()
 const structureSummary = ref()
 const structureDescription = ref()
 const structureImages = ref()
-const structureCreators = ref()
+const structureOwner = ref()
 
 const structureRef = ref()
 const structureOptions = ref({
@@ -54,20 +55,24 @@ const blobs = {
 const isLoading = ref(true)
 const error = ref()
 
+const loadingBar = useLoadingBar()
+
 const load = async () => {
   try {
+    loadingBar.start()
     isLoading.value = true
 
-    const response = (await api.getStructure(route.params.id.toString())).structure
-    structureName.value = response.name
-    structureSummary.value = response.summary
-    structureDescription.value = md.render(response.description)
-    structureImages.value = response.images
-    structureCreators.value = response.creators
+    const response = await structure_api.get(route.params.id.toString())
+    const data = await response.json()
+    structureName.value = data.name
+    structureSummary.value = data.summary
+    structureDescription.value = md.render(data.description)
+    structureImages.value = data.images
+    structureOwner.value = data.owner
 
     setTitle(structureName.value, '结构')
 
-    const file = await fetch(response.files[response.files.length - 1].url)
+    const file = await fetch(data.file)
     const blob = await file.blob()
     const arrayBuffer = await blob.arrayBuffer()
     const structure = loadStructure(NbtFile.read(new Uint8Array(arrayBuffer)).root)
@@ -113,12 +118,15 @@ const load = async () => {
         value: size.reduce((a: number, b: number) => a * b, 1),
       },
     ]
+
+    loadingBar.finish()
   } catch (e) {
     error.value = '加载失败'
     setTitle(error.value, '结构')
+
+    loadingBar.error()
   } finally {
     isLoading.value = false
-    loadingBarApi.value?.finish()
   }
 }
 
@@ -267,7 +275,7 @@ function handleDownload() {
 
 <template>
   <n-flex vertical :style="`width: 100%${isMobile ? `;` : `; gap: 1rem;`};`">
-    <n-empty v-if="!structureRef && !isLoading" :description="error" />
+    <reloadable-empty v-if="!structureRef && !isLoading" :description="error" :onclick="load" />
     <n-flex v-if="structureRef" vertical>
       <n-flex justify="space-between" align="center">
         <n-flex vertical>
@@ -278,29 +286,29 @@ function handleDownload() {
             {{ structureSummary }}
           </n-text>
         </n-flex>
-        <n-flex>
-          <n-button type="primary" @click="handleDownload">
-            <template #icon>
-              <n-icon :component="IconDownload" />
-            </template>
-            下载
-          </n-button>
-          <n-button strong secondary circle>
-            <template #icon>
-              <n-icon :component="IconHeart" />
-            </template>
-          </n-button>
-          <n-button strong secondary circle>
-            <template #icon>
-              <n-icon :component="IconStar" />
-            </template>
-          </n-button>
-          <n-button quaternary circle>
-            <template #icon>
-              <n-icon :component="IconDotsVertical" />
-            </template>
-          </n-button>
-        </n-flex>
+        <!--        <n-flex>-->
+        <n-button type="primary" @click="handleDownload">
+          <template #icon>
+            <n-icon :component="IconDownload" />
+          </template>
+          下载
+        </n-button>
+        <!--          <n-button strong secondary circle>-->
+        <!--            <template #icon>-->
+        <!--              <n-icon :component="IconHeart" />-->
+        <!--            </template>-->
+        <!--          </n-button>-->
+        <!--          <n-button strong secondary circle>-->
+        <!--            <template #icon>-->
+        <!--              <n-icon :component="IconStar" />-->
+        <!--            </template>-->
+        <!--          </n-button>-->
+        <!--          <n-button quaternary circle>-->
+        <!--            <template #icon>-->
+        <!--              <n-icon :component="IconDotsVertical" />-->
+        <!--            </template>-->
+        <!--          </n-button>-->
+        <!--        </n-flex>-->
       </n-flex>
       <n-grid cols="1 s:10" x-gap="s:32" y-gap="16 s:32" responsive="screen" item-responsive>
         <n-gi span="1 s:6">
@@ -330,7 +338,7 @@ function handleDownload() {
                         lazy
                         v-for="image in structureImages"
                         v-bind:key="image"
-                        :src="image.url"
+                        :src="image"
                         object-fit="cover"
                       />
                     </n-carousel>
@@ -386,13 +394,9 @@ function handleDownload() {
               hoverable
             >
               <template #header>
-                <n-h2> 创作团队 </n-h2>
+                <n-h2> 作者 </n-h2>
               </template>
-              <n-list clickable :show-divider="false">
-                <n-list-item v-for="creator in structureCreators" v-bind:key="creator">
-                  <user-card :user="creator" />
-                </n-list-item>
-              </n-list>
+              <user-card :user="structureOwner" />
             </n-card>
           </n-flex>
         </n-gi>
@@ -402,13 +406,6 @@ function handleDownload() {
 </template>
 
 <style scoped>
-.n-empty {
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .n-image {
   width: 100%;
   aspect-ratio: 16/9;

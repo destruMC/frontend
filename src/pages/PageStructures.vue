@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useIsMobile } from '@/utils/composables.util.ts'
-import api from '@/core/api.ts'
+import structure_api from '@/core/api/structure.ts'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/routers/router.ts'
-import type { StructurePreview } from '@/types/structure'
 import { useThemeVars } from 'naive-ui'
+import ReloadableEmpty from '@/components/ReloadableEmpty.vue'
 
 const theme = useThemeVars()
 
@@ -15,7 +15,14 @@ const route = useRoute()
 const s = computed(() => (isMobile.value ? '1rem' : '1.5rem'))
 const b = computed(() => (isMobile.value ? '0.5rem' : '1rem'))
 
-const structures = ref<StructurePreview[]>()
+const structures = ref<
+  {
+    id: string
+    name: string
+    cover: string
+    owner: string
+  }[]
+>()
 const pagination = ref({
   page: 1,
   size: 16,
@@ -29,12 +36,13 @@ const loadStructures = async () => {
   try {
     isLoading.value = true
 
+    const pagesResponse = await structure_api.pages()
+    const pagesData = await pagesResponse.json()
+    const total = pagesData.total
+
     let page = Math.max(1, Number(route.query.page) || 1)
-
-    const response = await api.getStructures(page === 1 ? undefined : page)
-
-    if (response.pagination.page !== page) {
-      page = response.pagination.page
+    if (page > total) {
+      page = total
       await router.replace({
         query: {
           ...route.query,
@@ -43,11 +51,13 @@ const loadStructures = async () => {
       })
     }
 
-    structures.value = response.structures
+    const pageResponse = await structure_api.page(page)
+    structures.value = await pageResponse.json()
+
     pagination.value = {
       ...pagination.value,
-      page: response.pagination.page,
-      total: response.pagination.total,
+      page,
+      total,
     }
   } catch (e) {
     error.value = '加载失败'
@@ -81,7 +91,11 @@ onMounted(() => {
   <n-flex vertical :style="`width: 100%; gap: ${isMobile ? `0.5rem` : `1rem`};`">
     <n-h1> 结构列表 </n-h1>
     <n-spin class="full" :show="isLoading" content-style="height: 100%;">
-      <n-empty v-if="!structures && !isLoading" :description="error" class="empty" />
+      <reloadable-empty
+        v-if="!structures && !isLoading"
+        :description="error"
+        :onclick="loadStructures"
+      />
       <n-grid
         v-if="structures"
         cols="1 s:2 m:3 l:4"
@@ -106,13 +120,13 @@ onMounted(() => {
                 <n-image
                   lazy
                   preview-disabled
-                  :src="structure.image"
+                  :src="structure.cover"
                   object-fit="cover"
                   :style="`width: 100%; aspect-ratio: 16/9; background-color: ${theme.bodyColor};`"
                 />
               </template>
               <span>
-                {{ structure.creator }}
+                {{ structure.owner }}
               </span>
             </n-card>
           </router-link>
@@ -137,12 +151,5 @@ onMounted(() => {
 
 .full {
   height: 100%;
-}
-
-.empty {
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 </style>

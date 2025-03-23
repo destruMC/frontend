@@ -21,28 +21,6 @@ const routes = [
       scope: '结构',
     },
   },
-  {
-    path: '/sign',
-    component: () => import('@/pages/PageSign.vue'),
-    meta: {
-      title: '登录',
-    },
-  },
-  {
-    path: '/user/:name',
-    component: () => import('@/pages/PageUser.vue'),
-    meta: {
-      title: '加载中',
-      scope: '用户',
-    },
-  },
-  {
-    path: '/settings/:option',
-    component: () => import('@/pages/PageSettings.vue'),
-    meta: {
-      title: '设置',
-    },
-  },
 ]
 
 export const loadingBarApi = ref()
@@ -64,7 +42,7 @@ export function setTitle(title?: unknown, scope?: unknown) {
 router.beforeEach((to, from, next) => {
   if (!from || to.path !== from.path) {
     if (loadingBarApi.value) {
-      loadingBarApi.value.start()
+      if (!to.path.startsWith('/structure/')) loadingBarApi.value.start()
     }
   }
   next()
@@ -75,7 +53,6 @@ router.afterEach((to, from) => {
     setTitle(to.meta.title, to.meta.scope)
     if (loadingBarApi.value) {
       if (to.path.startsWith('/structure/')) return
-      if (to.path.startsWith('/user/')) return
       loadingBarApi.value.finish()
     }
   }
