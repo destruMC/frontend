@@ -22,7 +22,7 @@ if (user && token && expires) {
   const userStore = useUserStore()
   const number = parseInt(expires)
   if (Date.now() >= number * 1000) {
-    userStore.clear()
+    // userStore.clear()
   } else {
     userStore.set(JSON.parse(user), token, number)
   }

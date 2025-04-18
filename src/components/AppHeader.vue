@@ -48,7 +48,7 @@ const options = ref([
   {
     key: 'profile',
     label: label('个人资料', undefined, () => {
-      return `/user/${user.value?.name}`
+      return `/user/${user.value?.id}`
     }),
     icon: icon(IconUser),
   },
