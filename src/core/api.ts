@@ -12,4 +12,13 @@ export default {
   getStructure(id: string) {
     return fetch(`${URL}/structures/${id}`)
   },
+
+  auth(token: string) {
+    return fetch(`${URL}/auth`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  },
 }

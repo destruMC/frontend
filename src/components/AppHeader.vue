@@ -9,11 +9,12 @@ import { type Component, h, ref } from 'vue'
 import { NIcon, NText, useMessage, useThemeVars } from 'naive-ui'
 import IconUser from '@/components/icons/xicons/tabler/IconUser.vue'
 import IconLogout from '@/components/icons/xicons/tabler/IconLogout.vue'
+import api from '@/core/api.ts'
 
 const route = useRoute()
 
 const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
+const { user, token } = storeToRefs(userStore)
 
 const theme = useThemeVars()
 
@@ -72,6 +73,18 @@ async function handleSelect(key: string) {
       break
     }
   }
+}
+
+if (user.value && token.value) {
+  api.auth(token.value).then(async (response) => {
+    if (response.ok) {
+      const { user, token, expires } = await response.json()
+      userStore.set(user, token, expires)
+    } else {
+      userStore.clear()
+      message.error('登录过期')
+    }
+  })
 }
 </script>
 
