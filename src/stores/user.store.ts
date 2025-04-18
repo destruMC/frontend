@@ -32,6 +32,7 @@ export const useUserStore = defineStore('user', {
     },
 
     clear() {
+      console.log(1)
       localStorage.removeItem('user')
       localStorage.removeItem('token')
       localStorage.removeItem('expires')
