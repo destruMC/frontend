@@ -14,11 +14,6 @@ export default {
   },
 
   auth(token: string) {
-    return fetch(`${URL}/auth`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    return fetch(`${URL}/auth?token=${token}`)
   },
 }
