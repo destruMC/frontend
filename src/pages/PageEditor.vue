@@ -44,7 +44,14 @@ async function handleDrop(e: DragEvent) {
 </script>
 
 <template>
-  <n-flex align="center" justify="center" @dragenter="preventDefault" @dragover="preventDefault" @dragleave="preventDefault" @drop="handleDrop">
+  <n-flex
+    align="center"
+    justify="center"
+    @dragenter="preventDefault"
+    @dragover="preventDefault"
+    @dragleave="preventDefault"
+    @drop="handleDrop"
+  >
     <structure-renderer v-if="structure" :structure :options />
   </n-flex>
 </template>

@@ -2,12 +2,12 @@ import { defineStore } from 'pinia'
 
 type UserStore = {
   user: {
-    id: string,
-    name: string,
-    avatar: string,
-  } | null,
-  token: string | null,
-  expires: number | null,
+    id: string
+    name: string
+    avatar: string
+  } | null
+  token: string | null
+  expires: number | null
 }
 
 export const useUserStore = defineStore('user', {
@@ -39,5 +39,5 @@ export const useUserStore = defineStore('user', {
       this.token = null
       this.expires = null
     },
-  }
+  },
 })

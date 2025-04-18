@@ -30,7 +30,7 @@ onMounted(() => {
       >
         <router-view class="router" />
       </n-layout-content>
-      <n-layout-footer bordered style="display: flex; justify-content: center;">
+      <n-layout-footer bordered style="display: flex; justify-content: center">
         <app-footer />
       </n-layout-footer>
     </n-scrollbar>

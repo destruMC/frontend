@@ -6,7 +6,7 @@ import api from '@/core/api.ts'
 import { useMessage } from 'naive-ui'
 
 const route = useRoute()
-const { state, code }  = route.query
+const { state, code } = route.query
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -16,11 +16,10 @@ const message = useMessage()
 
 if (user.value) {
   router.push(state === null ? '/' : state.toString())
-}
-else {
+} else {
   if (code) {
     try {
-      const response = await api.login(code.toString());
+      const response = await api.login(code.toString())
       if (response.ok) {
         const { user, token, expires } = await response.json()
         userStore.set(user, token, expires)
@@ -32,15 +31,12 @@ else {
       message.error('登录失败')
     }
     await router.push(state === null ? '/' : state.toString())
-  }
-  else {
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=Iv23liftwY1oI5k4FzuF&state=${state}`;
+  } else {
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=Iv23liftwY1oI5k4FzuF&state=${state}`
   }
 }
 </script>
 
 <template>
-  <n-flex justify="center">
-    登录中
-  </n-flex>
+  <n-flex justify="center"> 登录中 </n-flex>
 </template>

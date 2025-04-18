@@ -11,5 +11,5 @@ export default {
 
   getStructure(id: string) {
     return fetch(`${URL}/structures/${id}`)
-  }
+  },
 }
