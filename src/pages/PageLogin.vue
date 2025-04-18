@@ -18,8 +18,7 @@ if (user.value) {
   router.push(state === null ? '/' : state.toString())
 } else {
   if (code) {
-    try {
-      const response = await api.login(code.toString())
+    api.login(code.toString()).then(async (response) => {
       if (response.ok) {
         const { user, token, expires } = await response.json()
         userStore.set(user, token, expires)
@@ -27,10 +26,8 @@ if (user.value) {
       } else {
         message.error('登录失败')
       }
-    } catch (error) {
-      message.error('登录失败')
-    }
-    await router.push(state === null ? '/' : state.toString())
+      await router.push(state === null ? '/' : state.toString())
+    })
   } else {
     window.location.href = `https://github.com/login/oauth/authorize?client_id=Iv23liftwY1oI5k4FzuF&state=${state}`
   }
