@@ -371,7 +371,7 @@ function toNbt(properties: { [key: string]: string }) {
 }
 
 export function structure2Nbt(structure: StructureProvider) {
-  const nbt = NbtFile.create()
+  const nbt = NbtFile.create({ compression: 'gzip' })
   const root = nbt.root
 
   const size = BlockPos.toNbt(structure.getSize())
@@ -419,7 +419,7 @@ export function structure2Nbt(structure: StructureProvider) {
 }
 
 export function structure2destru(structure: StructureProvider) {
-  const nbt = NbtFile.create()
+  const nbt = NbtFile.create({ compression: 'gzip' })
   const root = nbt.root
 
   const palette = NbtList.create()

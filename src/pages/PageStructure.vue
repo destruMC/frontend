@@ -14,7 +14,6 @@ import {
 import { BlockState, ItemStack, NbtFile, type StructureProvider } from 'deepslate'
 import ItemRenderer from '@/components/renderers/ItemRenderer.vue'
 import { NButton, NFlex, NIcon, NSelect, useDialog, useLoadingBar, useThemeVars } from 'naive-ui'
-import pako from 'pako'
 import { setTitle } from '@/routers/router.ts'
 import ReloadableEmpty from '@/components/ReloadableEmpty.vue'
 import api from '@/core/api.ts'
@@ -185,7 +184,7 @@ function handleDownload() {
 
   async function handleDownload() {
     const blob = (handler: (structure: StructureProvider) => NbtFile) =>
-      new Blob([pako.gzip(handler(structureRef.value).write())])
+      new Blob([handler(structureRef.value).write()])
     switch (type.value) {
       case 'nbt': {
         if (!blobs.nbt.value) {

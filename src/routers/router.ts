@@ -45,6 +45,13 @@ const routes = [
       title: '登录',
     },
   },
+  {
+    path: '/nbt',
+    component: () => import('@/pages/PageNBT.vue'),
+    meta: {
+      title: 'NBT',
+    },
+  },
 ]
 
 export const loadingBarApi = ref()
