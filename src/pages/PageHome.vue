@@ -1,18 +1,11 @@
 <script setup lang="ts">
 import IconLogo from '@/components/icons/IconLogo.vue'
 import IconCube from '@/components/icons/xicons/tabler/IconCube.vue'
-import IconApps from '@/components/icons/xicons/tabler/IconApps.vue'
-import { useLoadingBar } from 'naive-ui'
-
-const loadingBar = useLoadingBar()
-
-function handleError() {
-  loadingBar.error()
-}
+import IconEdit from '@/components/icons/xicons/tabler/IconEdit.vue'
 </script>
 
 <template>
-  <n-flex vertical align="center" justify="center" size="small">
+  <n-flex vertical align="center" justify="center">
     <n-icon size="12rem" :component="IconLogo" />
     <n-h1> 分享 Minecraft 结构的网站 </n-h1>
     <n-text> 在这里发现、展示、分享结构，<br />一起构建我的世界。 </n-text>
@@ -25,12 +18,14 @@ function handleError() {
           浏览结构
         </n-button>
       </router-link>
-      <n-button @click="handleError">
-        <template #icon>
-          <n-icon :component="IconApps" />
-        </template>
-        在线编辑
-      </n-button>
+      <router-link to="/editor">
+        <n-button>
+          <template #icon>
+            <n-icon :component="IconEdit" />
+          </template>
+          在线编辑
+        </n-button>
+      </router-link>
     </n-flex>
   </n-flex>
 </template>

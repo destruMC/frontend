@@ -2,9 +2,6 @@
 import UserCard from '@/components/users/UserCard.vue'
 import StructureRenderer from '@/components/renderers/StructureRenderer.vue'
 import IconDownload from '@/components/icons/xicons/tabler/IconDownload.vue'
-import IconHeart from '@/components/icons/xicons/tabler/IconHeart.vue'
-import IconStar from '@/components/icons/xicons/tabler/IconStar.vue'
-import IconDotsVertical from '@/components/icons/xicons/tabler/IconDotsVertical.vue'
 import { useIsMobile } from '@/utils/composables.util.ts'
 import { computed, h, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -18,9 +15,9 @@ import { BlockState, ItemStack, NbtFile, type StructureProvider } from 'deepslat
 import ItemRenderer from '@/components/renderers/ItemRenderer.vue'
 import { NButton, NFlex, NIcon, NSelect, useDialog, useLoadingBar, useThemeVars } from 'naive-ui'
 import pako from 'pako'
-import { loadingBarApi, setTitle } from '@/routers/router.ts'
-import structure_api from '@/core/api/structure.ts'
+import { setTitle } from '@/routers/router.ts'
 import ReloadableEmpty from '@/components/ReloadableEmpty.vue'
+import api from '@/core/api.ts'
 
 const theme = useThemeVars()
 
@@ -34,7 +31,7 @@ const structureName = ref()
 const structureSummary = ref()
 const structureDescription = ref()
 const structureImages = ref()
-const structureOwner = ref()
+const structureAuthor = ref()
 
 const structureRef = ref()
 const structureOptions = ref({
@@ -62,13 +59,13 @@ const load = async () => {
     loadingBar.start()
     isLoading.value = true
 
-    const response = await structure_api.get(route.params.id.toString())
+    const response = await api.getStructure(route.params.id.toString())
     const data = await response.json()
     structureName.value = data.name
     structureSummary.value = data.summary
     structureDescription.value = md.render(data.description)
     structureImages.value = data.images
-    structureOwner.value = data.owner
+    structureAuthor.value = data.author
 
     setTitle(structureName.value, '结构')
 
@@ -136,7 +133,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   if (isLoading.value) {
-    loadingBarApi.value?.finish()
+    loadingBar.finish()
   }
 })
 
@@ -274,7 +271,7 @@ function handleDownload() {
 </script>
 
 <template>
-  <n-flex vertical :style="`width: 100%${isMobile ? `;` : `; gap: 1rem;`};`">
+  <n-flex vertical :style="`${isMobile ? '' : 'gap: 1rem;'}`">
     <reloadable-empty v-if="!structureRef && !isLoading" :description="error" :onclick="load" />
     <n-flex v-if="structureRef" vertical>
       <n-flex justify="space-between" align="center">
@@ -396,7 +393,7 @@ function handleDownload() {
               <template #header>
                 <n-h2> 作者 </n-h2>
               </template>
-              <user-card :user="structureOwner" />
+              <user-card :user="structureAuthor" />
             </n-card>
           </n-flex>
         </n-gi>

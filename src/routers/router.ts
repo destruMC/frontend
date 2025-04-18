@@ -19,6 +19,30 @@ const routes = [
     meta: {
       title: '加载中',
       scope: '结构',
+      flag: true,
+    },
+  },
+  {
+    path: '/user/:id',
+    component: () => import('@/pages/PageUser.vue'),
+    meta: {
+      title: '加载中',
+      scope: '用户',
+      flag: true,
+    },
+  },
+  {
+    path: '/editor',
+    component: () => import('@/pages/PageEditor.vue'),
+    meta: {
+      title: '结构编辑器',
+    },
+  },
+  {
+    path: '/login',
+    component: () => import('@/pages/PageLogin.vue'),
+    meta: {
+      title: '登录',
     },
   },
 ]
@@ -42,17 +66,20 @@ export function setTitle(title?: unknown, scope?: unknown) {
 router.beforeEach((to, from, next) => {
   if (!from || to.path !== from.path) {
     if (loadingBarApi.value) {
-      if (!to.path.startsWith('/structure/')) loadingBarApi.value.start()
+      if (!to.meta.flag) loadingBarApi.value.start()
     }
   }
-  next()
+  if (to.path === '/login' && !to.query.state) {
+    to.query.state = from.fullPath
+    next(to)
+  } else next()
 })
 
 router.afterEach((to, from) => {
   if (!from || to.path !== from.path) {
     setTitle(to.meta.title, to.meta.scope)
     if (loadingBarApi.value) {
-      if (to.path.startsWith('/structure/')) return
+      if (to.meta.flag) return
       loadingBarApi.value.finish()
     }
   }

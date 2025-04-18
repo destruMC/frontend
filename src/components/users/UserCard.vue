@@ -2,7 +2,6 @@
 defineProps<{
   user: {
     id: string
-    name: string
     avatar: string
   }
 }>()
@@ -13,7 +12,7 @@ defineProps<{
     <n-flex align="center">
       <n-avatar round :src="user.avatar" />
       <n-text>
-        {{ user.name }}
+        {{ user.id }}
       </n-text>
     </n-flex>
   </router-link>
