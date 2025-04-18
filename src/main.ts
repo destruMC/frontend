@@ -17,14 +17,14 @@ resourceStore.load()
 
 const user = localStorage.getItem('user')
 const token = localStorage.getItem('token')
-const expires = localStorage.getItem('expires')
-if (user && token && expires) {
+const expired = localStorage.getItem('expired')
+if (user && token && expired) {
   const userStore = useUserStore()
-  const number = parseInt(expires)
-  if (Date.now() >= number * 1000) {
+  const number = parseInt(expired)
+  if (Date.now() >= number) {
     userStore.clear()
   } else {
-    userStore.set(JSON.parse(user), token, number)
+    userStore.load(JSON.parse(user), token, number)
   }
 }
 
