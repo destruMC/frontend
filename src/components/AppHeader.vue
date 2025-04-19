@@ -6,7 +6,7 @@ import { RouterLink, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user.store.ts'
 import { storeToRefs } from 'pinia'
 import { type Component, h, ref } from 'vue'
-import { NIcon, NText, useDialog, useMessage, useThemeVars } from 'naive-ui'
+import { NButton, NIcon, NText, useDialog, useMessage, useThemeVars } from 'naive-ui'
 import IconUser from '@/components/icons/xicons/tabler/IconUser.vue'
 import IconLogout from '@/components/icons/xicons/tabler/IconLogout.vue'
 import api from '@/core/api.ts'
@@ -74,13 +74,23 @@ async function handleSelect(key: string) {
       dialog.warning({
         title: '警告',
         content: '退出登录并不会注销 GitHub 令牌授权，如果你认为令牌已泄露，请前往 GitHub 手动注销',
-        positiveText: '前往',
-        onPositiveClick: () => {
-          window.open(
-            'https://github.com/settings/apps/authorizations#oauth-authorization-Iv23liftwY1oI5k4FzuF',
-            '_blank',
-          )
-        },
+        action: () =>
+          h(
+            NButton,
+            {
+              tag: 'a',
+              href: 'https://github.com/settings/apps/authorizations#oauth-authorization-Iv23liftwY1oI5k4FzuF',
+              target: '_blank',
+              type: 'warning',
+            },
+            {
+              default: () => '前往',
+              icon: () =>
+                h(NIcon, {
+                  component: IconBrandGithub,
+                }),
+            },
+          ),
       })
       break
     }
