@@ -16,8 +16,4 @@ export default {
   auth(token: string) {
     return fetch(`${URL}/auth?token=${token}`)
   },
-
-  logout(token: string) {
-    return fetch(`${URL}/logout?token=${token}`)
-  },
 }
