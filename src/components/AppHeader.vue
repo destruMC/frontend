@@ -68,6 +68,9 @@ const message = useMessage()
 async function handleSelect(key: string) {
   switch (key) {
     case 'logout': {
+      if (token.value) {
+        api.logout(token.value)
+      }
       userStore.clear()
       message.success('已退出登录')
       break
