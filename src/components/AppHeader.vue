@@ -70,6 +70,7 @@ async function handleSelect(key: string) {
     case 'logout': {
       userStore.clear()
       message.success('已退出登录')
+      window.open('https://github.com/settings/apps/authorizations#oauth-authorization-Iv23liftwY1oI5k4FzuF', '_blank')
       break
     }
   }
