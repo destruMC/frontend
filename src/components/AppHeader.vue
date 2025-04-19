@@ -6,7 +6,7 @@ import { RouterLink, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user.store.ts'
 import { storeToRefs } from 'pinia'
 import { type Component, h, ref } from 'vue'
-import { NIcon, NText, useMessage, useThemeVars } from 'naive-ui'
+import { NIcon, NText, useDialog, useMessage, useThemeVars } from 'naive-ui'
 import IconUser from '@/components/icons/xicons/tabler/IconUser.vue'
 import IconLogout from '@/components/icons/xicons/tabler/IconLogout.vue'
 import api from '@/core/api.ts'
@@ -64,13 +64,24 @@ const options = ref([
 ])
 
 const message = useMessage()
+const dialog = useDialog()
 
 async function handleSelect(key: string) {
   switch (key) {
     case 'logout': {
       userStore.clear()
       message.success('已退出登录')
-      window.open('https://github.com/settings/apps/authorizations#oauth-authorization-Iv23liftwY1oI5k4FzuF', '_blank')
+      dialog.warning({
+        title: '警告',
+        content: '退出登录并不会注销 GitHub 令牌授权，如果你认为令牌已泄露，请前往 GitHub 手动注销',
+        positiveText: '前往',
+        onPositiveClick: () => {
+          window.open(
+            'https://github.com/settings/apps/authorizations#oauth-authorization-Iv23liftwY1oI5k4FzuF',
+            '_blank',
+          )
+        },
+      })
       break
     }
   }
